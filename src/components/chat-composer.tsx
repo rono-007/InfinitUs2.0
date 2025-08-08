@@ -4,7 +4,7 @@ import * as React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BrainCircuit, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
+import { BrainCircuit, Paperclip, Send, Sparkles, X } from "lucide-react"
 import type { Message } from "@/lib/types"
 import { Card, CardContent } from "./ui/card"
 import { AttachmentModal } from "./attachment-modal"
@@ -135,7 +135,6 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Smile className="text-muted-foreground hidden sm:block h-5 w-5" />
           <Select defaultValue="casual">
             <SelectTrigger className="w-[120px]" disabled={isThinking}>
               <SelectValue placeholder="Tone" />
