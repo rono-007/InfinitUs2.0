@@ -12,6 +12,7 @@ import {
 import { getSuggestions } from "@/ai/flows/suggestion-carousel"
 import type { SuggestionOutput } from "@/lib/ai-types"
 import { Skeleton } from "./ui/skeleton"
+import Autoplay from "embla-carousel-autoplay"
 
 interface SuggestionCarouselProps {
     onSuggestionClick: (suggestion: string) => void;
@@ -20,6 +21,10 @@ interface SuggestionCarouselProps {
 export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProps) {
   const [suggestions, setSuggestions] = React.useState<SuggestionOutput>([])
   const [loading, setLoading] = React.useState(true)
+
+  const plugin = React.useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: true })
+  )
 
   React.useEffect(() => {
     async function fetchSuggestions() {
@@ -44,7 +49,13 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
 
   return (
     <div className="mb-4">
-      <Carousel opts={{ align: "start", loop: true }} className="w-full">
+      <Carousel 
+        plugins={[plugin.current]}
+        opts={{ align: "start", loop: true }} 
+        className="w-full"
+        onMouseEnter={plugin.current.stop}
+        onMouseLeave={plugin.current.reset}
+      >
         <CarouselContent>
           {loading
             ? Array.from({ length: 4 }).map((_, index) => (
