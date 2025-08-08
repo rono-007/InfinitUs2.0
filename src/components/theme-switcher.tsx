@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useTheme } from "next-themes"
-import { Moon, Sun } from "lucide-react"
+import { Check, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,18 +11,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
 export function ThemeSwitcher() {
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
+  const [activeTheme, setActiveTheme] = React.useState(theme)
+
+  React.useEffect(() => {
+    const dataTheme = document.documentElement.getAttribute('data-theme')
+    if (dataTheme) {
+      setActiveTheme(dataTheme)
+    } else {
+      setActiveTheme(theme)
+    }
+  }, [theme])
 
   const handleThemeChange = (selectedTheme: string) => {
+    setActiveTheme(selectedTheme)
     const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender', 'monochrome'].includes(selectedTheme);
 
     if (isCustomTheme) {
       document.documentElement.setAttribute('data-theme', selectedTheme);
       if (selectedTheme === 'monochrome') {
         document.documentElement.classList.add('dark');
-        setTheme('dark');
+        setTheme('dark'); 
       } else {
         document.documentElement.classList.remove('dark');
         setTheme('light'); 
@@ -33,6 +45,16 @@ export function ThemeSwitcher() {
     }
   }
 
+  const themes = [
+    { name: "light", label: "Light" },
+    { name: "dark", label: "Dark" },
+    { name: "system", label: "System" },
+    { name: "deep-sea", label: "Deep Sea" },
+    { name: "mint", label: "Mint" },
+    { name: "sunset", label: "Sunset" },
+    { name: "lavender", label: "Lavender" },
+    { name: "monochrome", label: "Monochrome" },
+  ]
 
   return (
     <DropdownMenu>
@@ -44,31 +66,12 @@ export function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
-
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
-          System
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('deep-sea')}>
-          Deep Sea
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('mint')}>
-          Mint
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('sunset')}>
-          Sunset
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('lavender')}>
-         Lavender
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('monochrome')}>
-          Monochrome
-        </DropdownMenuItem>
+        {themes.map(({ name, label }) => (
+          <DropdownMenuItem key={name} onClick={() => handleThemeChange(name)} className="justify-between">
+            {label}
+            {activeTheme === name && <Check className="h-4 w-4" />}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
