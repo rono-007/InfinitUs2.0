@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { Message } from "@/lib/types"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Bot, Copy, CornerUpLeft, User } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -10,6 +10,9 @@ import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "./ui/card"
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 
 interface ChatMessageProps {
   message: Message
@@ -30,51 +33,50 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     navigator.clipboard.writeText(text)
     toast({
       title: "Copied to clipboard!",
-      description: "The code has been copied.",
+      description: "The message has been copied.",
     })
   }
 
   const isAssistant = message.role === 'assistant'
   const isThinking = message.id === 'thinking'
 
-  const formatMessage = (text: string) => {
-    const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
-    const parts = text.split(codeBlockRegex);
+  const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
+    const match = /language-(\w+)/.exec(className || '');
+    const code = String(children).replace(/\n$/, '');
 
-    return parts.map((part, index) => {
-      if (index % 3 === 2) { // This is the code content
-        const language = parts[index - 1] || 'plaintext';
-        return (
-          <div key={index} className="relative my-4">
-             <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-6 w-6"
-                onClick={() => handleCopy(part)}
-              >
-                <Copy size={14} />
-              </Button>
-            <SyntaxHighlighter
-              language={language}
-              style={vscDarkPlus}
-              customStyle={{ margin: 0, borderRadius: '0.5rem' }}
-              codeTagProps={{ style: { fontFamily: 'inherit' } }}
-            >
-              {part}
-            </SyntaxHighlighter>
-          </div>
-        );
-      } else if (index % 3 === 0) { // This is regular text
-        return part.split('\n').map((line, i) => (
-          <span key={i}>
-            {line}
-            {i !== part.split('\n').length - 1 && <br />}
-          </span>
-        ));
-      }
-      return null;
-    });
-  }
+    const handleCodeCopy = () => {
+      handleCopy(code);
+    }
+
+    return !inline ? (
+      <div className="relative my-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 h-6 w-6"
+          onClick={handleCodeCopy}
+        >
+          <Copy size={14} />
+        </Button>
+        <SyntaxHighlighter
+          style={vscDarkPlus}
+          language={match ? match[1] : 'text'}
+          PreTag="div"
+          {...props}
+          customStyle={{
+            borderRadius: '0.5rem',
+            padding: '1rem'
+          }}
+        >
+          {code}
+        </SyntaxHighlighter>
+      </div>
+    ) : (
+      <code className="bg-muted px-1 py-0.5 rounded-sm" {...props}>
+        {children}
+      </code>
+    );
+  };
 
 
   return (
@@ -115,8 +117,15 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
                 </div>
               </div>
             ) : (
-            <div className="prose prose-sm dark:prose-invert max-w-none prose-p:m-0">
-                {formatMessage(message.text)}
+            <div className="prose prose-sm dark:prose-invert max-w-none prose-p:m-0 prose-headings:m-0 prose-ul:m-0 prose-ol:m-0 prose-li:my-1 prose-a:text-primary hover:prose-a:underline">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code: CodeBlock,
+                  }}
+                >
+                  {message.text}
+                </ReactMarkdown>
             </div>
             )}
           </div>
