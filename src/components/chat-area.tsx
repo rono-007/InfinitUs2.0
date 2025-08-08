@@ -28,7 +28,7 @@ export function ChatArea() {
   const { activeChat, addMessage, createNewChat, isThinking, setIsThinking } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const [selectedModel, setSelectedModel] = React.useState("googleai/gemini-2.0-flash")
-  const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+  const viewportRef = React.useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
@@ -78,13 +78,10 @@ export function ChatArea() {
   }
 
   React.useEffect(() => {
-    if (scrollAreaRef.current) {
-        const viewport = scrollAreaRef.current.children[0] as HTMLDivElement;
-        if(viewport) {
-            viewport.scrollTop = viewport.scrollHeight;
-        }
+    if (viewportRef.current) {
+      viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
     }
-  }, [activeChat?.messages])
+  }, [activeChat?.messages, isThinking])
 
 
   return (
@@ -116,7 +113,7 @@ export function ChatArea() {
       </header>
 
       {activeChat && activeChat.messages.length > 0 ? (
-        <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow p-4" viewportRef={viewportRef}>
           <div className="space-y-6 max-w-4xl mx-auto">
             {activeChat.messages.map((message) => (
               <ChatMessage key={message.id} message={message} onReply={handleReply} />
