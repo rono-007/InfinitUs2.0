@@ -90,9 +90,9 @@ export function ChatArea() {
             <SidebarTrigger />
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Select defaultValue="gemini-2.0-flash">
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[140px] sm:w-[180px]">
               <SelectValue placeholder="Select a model" />
             </SelectTrigger>
             <SelectContent>
@@ -101,7 +101,7 @@ export function ChatArea() {
           </Select>
           <div className="flex items-center space-x-2">
             <Switch id="privacy-mode" />
-            <Label htmlFor="privacy-mode">Privacy</Label>
+            <Label htmlFor="privacy-mode" className="hidden sm:inline">Privacy</Label>
           </div>
         </div>
       </header>
@@ -118,7 +118,7 @@ export function ChatArea() {
         </ScrollArea>
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center">
-            <div className="text-center">
+            <div className="text-center p-4">
                 <div className="inline-block p-4 bg-primary/10 rounded-full">
                     <Bot size={40} className="text-primary" />
                 </div>
