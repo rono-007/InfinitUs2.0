@@ -52,31 +52,46 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
             </Card>
           )}
           <div className={cn(
-            "p-4 rounded-lg",
+            "p-4 rounded-lg min-w-[60px]",
             isAssistant ? "bg-card rounded-tl-none" : "bg-primary text-primary-foreground rounded-br-none",
             isThinking && "p-2"
           )}>
             {isThinking ? (
               <div className="flex items-center justify-center p-2">
-                <div className="flex items-center gap-2 font-medium">
-                  <Loader className="h-4 w-4 animate-spin" />
-                  Thinking...
+                <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-bounce-dot"></span>
                 </div>
               </div>
             ) : (
             <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.text.replace(/\\n/g, '<br/>').replace(/```(javascript|typescript|jsx|tsx|html|css|json)?\\n([\s\S]*?)\\n```/g, (match, lang, code) => `<pre><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`) }} />
             )}
           </div>
-          {!isThinking && <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-1 p-1 bg-card/50 backdrop-blur-sm rounded-md border">
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy}>
-                <Copy size={14} />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onReply(message)}>
-                <CornerUpLeft size={14} />
-              </Button>
+          {!isThinking && !isAssistant && (
+            <div className="absolute top-0 left-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1 p-1 bg-card/50 backdrop-blur-sm rounded-md border">
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onReply(message)}>
+                  <CornerUpLeft size={14} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy}>
+                  <Copy size={14} />
+                </Button>
+              </div>
             </div>
-          </div>}
+          )}
+          {!isThinking && isAssistant && (
+            <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 p-1 bg-card/50 backdrop-blur-sm rounded-md border">
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy}>
+                        <Copy size={14} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onReply(message)}>
+                        <CornerUpLeft size={14} />
+                    </Button>
+                </div>
+            </div>
+          )}
         </div>
         <div className="text-xs text-muted-foreground">
           {formattedTimestamp}
