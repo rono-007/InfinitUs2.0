@@ -22,6 +22,7 @@ import { useChat } from "@/hooks/use-chat"
 import { Bot } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { ThemeSwitcher } from "./theme-switcher"
 
 export function ChatArea() {
   const { activeChat, addMessage, createNewChat, isThinking, setIsThinking } = useChat();
@@ -93,6 +94,7 @@ export function ChatArea() {
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
+          <ThemeSwitcher />
           <Select defaultValue="gemini-2.0-flash">
             <SelectTrigger className="w-[140px] sm:w-[180px]">
               <SelectValue placeholder="Select a model" />
