@@ -44,7 +44,7 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
   return (
     <div className="mb-4">
       <Carousel 
-        plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]}
+        plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
         opts={{ align: "start", loop: true }} 
         className="w-full"
       >
@@ -61,7 +61,7 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
                     <Card 
-                        className="h-[80px] shadow-sm bg-background hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg"
+                        className="h-[80px] shadow-sm bg-transparent hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg border"
                         onClick={() => onSuggestionClick(suggestion)}
                     >
                       <CardContent className="flex items-center justify-center p-4 text-center">
