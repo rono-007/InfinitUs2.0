@@ -36,7 +36,7 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
   }, [])
 
   return (
-    <div className="relative w-full overflow-hidden mb-4">
+    <div className="relative w-full overflow-hidden mb-4 before:absolute before:left-0 before:top-0 before:bottom-0 before:z-10 before:w-24 before:bg-gradient-to-r before:from-background before:to-transparent after:absolute after:right-0 after:top-0 after:bottom-0 after:z-10 after:w-24 after:bg-gradient-to-l after:from-background after:to-transparent">
         <div className="flex animate-marquee">
             {loading ? (
                 Array.from({ length: 8 }).map((_, index) => (
