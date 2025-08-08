@@ -42,7 +42,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
           <AvatarFallback>{isThinking ? <Loader className="animate-spin" /> : <Bot size={20} />}</AvatarFallback>
         </Avatar>
       )}
-      <div className={cn("flex flex-col gap-1 w-full max-w-[85%]", !isAssistant && "items-end")}>
+      <div className={cn("flex flex-col gap-1 max-w-[85%]", !isAssistant && "items-end")}>
         <div className="group relative">
           {message.metadata?.isReplying && (
             <Card className="mb-2 bg-muted/50 border-l-4 border-primary/50">
