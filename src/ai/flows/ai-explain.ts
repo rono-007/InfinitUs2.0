@@ -3,7 +3,7 @@
 'use server';
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 
 const ExplainInputSchema = z.object({
   targetMessageId: z.string().optional().describe('The ID of the message to explain.'),

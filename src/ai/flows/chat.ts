@@ -9,9 +9,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
-import { Message } from '@/lib/types';
 
-export const ChatInputSchema = z.object({
+const ChatInputSchema = z.object({
   history: z.array(z.object({
     role: z.enum(['user', 'assistant']),
     text: z.string(),
@@ -20,7 +19,7 @@ export const ChatInputSchema = z.object({
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 
-export const ChatOutputSchema = z.object({
+const ChatOutputSchema = z.object({
   message: z.string().describe('The assistant response.'),
 });
 export type ChatOutput = z.infer<typeof ChatOutputSchema>;

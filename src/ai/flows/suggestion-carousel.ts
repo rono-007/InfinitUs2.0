@@ -7,7 +7,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 
 const SuggestionOutputSchema = z.array(z.string().describe('A suggested question to ask the chatbot.'));
 export type SuggestionOutput = z.infer<typeof SuggestionOutputSchema>;
