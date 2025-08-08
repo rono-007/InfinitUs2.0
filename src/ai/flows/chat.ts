@@ -17,7 +17,7 @@ const chatPrompt = ai.definePrompt({
   name: 'chatPrompt',
   input: {schema: ChatInputSchema},
   output: {schema: ChatOutputSchema},
-  prompt: `You are a helpful and friendly AI assistant named Lexi.
+  prompt: `You are a helpful and friendly AI assistant named InfinitUs 2.0.
 
 Continue the following conversation.
 
@@ -25,12 +25,12 @@ Continue the following conversation.
   {{#if this.isUser}}
     User: {{{this.text}}}
   {{else}}
-    Lexi: {{{this.text}}}
+    InfinitUs 2.0: {{{this.text}}}
   {{/if}}
 {{/each}}
 
 User: {{{message}}}
-Lexi:
+InfinitUs 2.0:
 `,
   config: {},
 });

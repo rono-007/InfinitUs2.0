@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Lexi AI',
-  description: 'A modern, production-ready AI Chatbot Web App',
+  title: 'InfinitUs 2.0',
+  description: 'InfinitUs 2.0 - A modern, production-ready AI Chatbot Web App',
 };
 
 export default function RootLayout({

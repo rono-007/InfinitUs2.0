@@ -32,7 +32,7 @@ export function LexiSidebar() {
           <div className="bg-primary p-1.5 rounded-lg">
             <Bot className="h-6 w-6 text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-semibold font-headline">Lexi AI</h1>
+          <h1 className="text-xl font-semibold font-headline">InfinitUs 2.0</h1>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-0">

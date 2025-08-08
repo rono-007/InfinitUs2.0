@@ -128,7 +128,7 @@ export function ChatArea() {
                 <div className="inline-block p-4 bg-primary/10 rounded-full">
                     <Bot size={40} className="text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold mt-4">Lexi AI</h2>
+                <h2 className="text-2xl font-bold mt-4">InfinitUs 2.0</h2>
                 <p className="text-muted-foreground">Start a new conversation</p>
             </div>
         </div>
