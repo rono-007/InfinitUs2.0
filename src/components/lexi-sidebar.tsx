@@ -29,8 +29,8 @@ export function LexiSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <div className="bg-primary p-2 rounded-lg">
-            <Infinity className="h-5 w-5 text-primary-foreground" />
+          <div className="bg-card text-primary p-2 rounded-lg border">
+            <Infinity className="h-5 w-5" />
           </div>
           <h1 className="text-xl font-semibold font-headline">InfinitUs 2.0</h1>
         </div>
