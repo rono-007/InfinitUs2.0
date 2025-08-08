@@ -22,7 +22,6 @@ import { useChat } from "@/hooks/use-chat"
 import { Bot } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { ThemeSwitcher } from "./theme-switcher"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip"
 
 export function ChatArea() {
@@ -94,23 +93,25 @@ export function ChatArea() {
   return (
     <div className="flex flex-col h-screen">
       <header className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1">
             <SidebarTrigger />
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
         </div>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Select value={selectedModel} onValueChange={setSelectedModel}>
-            <SelectTrigger className="w-[140px] sm:w-[180px]">
-              <SelectValue placeholder="Select a model" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="googleai/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
-                <SelectItem value="googleai/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
-                <SelectItem value="googleai/gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</SelectItem>
-                <SelectItem value="googleai/gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
-                <SelectItem value="googleai/gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex-1 flex justify-center">
+            <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <SelectTrigger className="w-[140px] sm:w-[180px]">
+                <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="googleai/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                    <SelectItem value="googleai/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                    <SelectItem value="googleai/gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</SelectItem>
+                    <SelectItem value="googleai/gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
+                    <SelectItem value="googleai/gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-end">
           <div className="items-center gap-2 hidden sm:flex">
             <Switch id="privacy-mode" checked={isPrivacyMode} onCheckedChange={setIsPrivacyMode} />
             <TooltipProvider>
