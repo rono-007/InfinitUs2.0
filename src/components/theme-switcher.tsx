@@ -20,10 +20,13 @@ export function ThemeSwitcher() {
 
     if (isCustomTheme) {
       document.documentElement.setAttribute('data-theme', selectedTheme);
-      // Always remove dark class when switching to a custom theme to show its light variant
-      document.documentElement.classList.remove('dark');
-      // Set the base theme to 'light' so next-themes doesn't re-add 'dark' class on its own
-      setTheme('light'); 
+      if (selectedTheme === 'monochrome') {
+        document.documentElement.classList.add('dark');
+        setTheme('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        setTheme('light'); 
+      }
     } else {
       document.documentElement.removeAttribute('data-theme');
       setTheme(selectedTheme);
