@@ -22,10 +22,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ThemeProvider
-            attribute="class"
-            defaultTheme="monochrome"
-            enableSystem
-            disableTransitionOnChange
+            attribute="data-theme"
+            defaultTheme="light"
+            themes={['light', 'dark', 'mint', 'sunset', 'deep-sea', 'lavender']}
         >
           {children}
           <Toaster />
