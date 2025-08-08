@@ -144,8 +144,7 @@ export function ChatArea() {
                 <div className="inline-block p-4 bg-primary/10 rounded-full">
                     <Infinity size={40} className="text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold mt-4">InfinitUs 2.0</h2>
-                <p className="text-muted-foreground">Infinite possibilities, one question away.</p>
+                <p className="text-muted-foreground mt-4">Infinite possibilities, one question away.</p>
             </div>
         </div>
       )}
