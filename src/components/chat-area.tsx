@@ -17,6 +17,7 @@ import { ChatComposer } from "./chat-composer"
 import type { Message } from "@/lib/types"
 import { chat } from "@/ai/flows/chat"
 import { useToast } from "@/hooks/use-toast"
+import type { ChatInput } from "@/lib/ai-types"
 
 const initialMessages: Message[] = [
   {
@@ -48,8 +49,8 @@ export function ChatArea() {
     setIsThinking(true)
 
     try {
-      const history = newMessages.slice(-10).map(m => ({ role: m.role, text: m.text }));
-      const result = await chat({ message: text, history });
+      const history = newMessages.slice(-10).map(m => ({ role: m.role, text: m.text, isUser: m.role === 'user' }));
+      const result = await chat({ message: text, history } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
         role: 'assistant',

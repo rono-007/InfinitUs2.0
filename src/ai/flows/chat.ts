@@ -8,21 +8,12 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'zod';
-
-const ChatInputSchema = z.object({
-  history: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    text: z.string(),
-  })).describe('The chat history.'),
-  message: z.string().describe('The user message.'),
-});
-export type ChatInput = z.infer<typeof ChatInputSchema>;
-
-const ChatOutputSchema = z.object({
-  message: z.string().describe('The assistant response.'),
-});
-export type ChatOutput = z.infer<typeof ChatOutputSchema>;
+import {
+  ChatInput,
+  ChatInputSchema,
+  ChatOutput,
+  ChatOutputSchema,
+} from '@/lib/ai-types';
 
 const chatPrompt = ai.definePrompt({
   name: 'chatPrompt',
@@ -33,17 +24,19 @@ const chatPrompt = ai.definePrompt({
 Continue the following conversation.
 
 {{#each history}}
-{{#if (this.role === 'user')}}
-User: {{this.text}}
-{{/if}}
-{{#if (this.role === 'assistant')}}
-Lexi: {{this.text}}
-{{/if}}
+  {{#if this.isUser}}
+    User: {{this.text}}
+  {{else}}
+    Lexi: {{this.text}}
+  {{/if}}
 {{/each}}
 
 User: {{message}}
 Lexi:
 `,
+  config: {
+    model: 'googleai/gemini-2.0-flash',
+  },
 });
 
 const chatFlow = ai.defineFlow(
@@ -52,7 +45,7 @@ const chatFlow = ai.defineFlow(
     inputSchema: ChatInputSchema,
     outputSchema: ChatOutputSchema,
   },
-  async (input) => {
+  async input => {
     const {output} = await chatPrompt(input);
     return output!;
   }

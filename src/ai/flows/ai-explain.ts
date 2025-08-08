@@ -1,21 +1,13 @@
+'use server';
 // This file implements the Genkit flow for the AI Explain feature, allowing users to get structured explanations of selected messages or documents.
 
-'use server';
-
 import {ai} from '@/ai/genkit';
-import {z} from 'zod';
-
-const ExplainInputSchema = z.object({
-  targetMessageId: z.string().optional().describe('The ID of the message to explain.'),
-  attachmentId: z.string().optional().describe('The ID of the attachment to explain.'),
-  text: z.string().optional().describe('The text to explain, if no message or attachment is selected.'),
-});
-export type ExplainInput = z.infer<typeof ExplainInputSchema>;
-
-const ExplainOutputSchema = z.object({
-  explanation: z.string().describe('A structured, AI-powered explanation of the content.'),
-});
-export type ExplainOutput = z.infer<typeof ExplainOutputSchema>;
+import {
+  ExplainInput,
+  ExplainInputSchema,
+  ExplainOutput,
+  ExplainOutputSchema,
+} from '@/lib/ai-types';
 
 const explainPrompt = ai.definePrompt({
   name: 'explainPrompt',

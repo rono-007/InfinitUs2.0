@@ -9,7 +9,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { getSuggestions, type SuggestionOutput } from "@/ai/flows/suggestion-carousel"
+import { getSuggestions } from "@/ai/flows/suggestion-carousel"
+import type { SuggestionOutput } from "@/lib/ai-types"
 import { Skeleton } from "./ui/skeleton"
 
 interface SuggestionCarouselProps {
