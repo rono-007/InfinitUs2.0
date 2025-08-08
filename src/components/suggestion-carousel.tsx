@@ -61,7 +61,7 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
                     <Card 
-                        className="h-[80px] border-0 shadow-sm bg-background hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg"
+                        className="h-[80px] shadow-sm bg-background hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg"
                         onClick={() => onSuggestionClick(suggestion)}
                     >
                       <CardContent className="flex items-center justify-center p-4 text-center">
