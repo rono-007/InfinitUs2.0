@@ -103,12 +103,17 @@ export default {
               animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
             },
         },
+        'pulse-glow': {
+            '0%, 100%': { opacity: '0.5' },
+            '50%': { opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'marquee': 'marquee 30s linear infinite',
         'bounce-dot': 'bounce-dot 1s infinite',
+        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },
