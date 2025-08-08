@@ -133,7 +133,7 @@ export function ChatArea() {
       )}
 
       <div className="p-4 bg-background">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {(!activeChat || activeChat.messages.length === 0) && !isMobile && <SuggestionCarousel onSuggestionClick={handleSendMessage} />}
           <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking} />
         </div>
