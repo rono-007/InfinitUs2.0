@@ -10,6 +10,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     if (!theme) {
       document.documentElement.setAttribute('data-theme', 'monochrome');
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'monochrome');
     }
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
