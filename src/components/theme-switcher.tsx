@@ -15,6 +15,20 @@ import {
 export function ThemeSwitcher() {
   const { setTheme } = useTheme()
 
+  const handleThemeChange = (theme: string) => {
+    const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender', 'monochrome'].includes(theme);
+    if (isCustomTheme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      // If we are switching to a custom theme, we might want to remove the 'dark' class
+      // to ensure our custom theme's light/dark mode is handled by its own CSS.
+      // However, the current CSS is designed to work with the dark class.
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      setTheme(theme);
+    }
+  }
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,28 +39,29 @@ export function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
+
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           System
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'deep-sea')}>
+        <DropdownMenuItem onClick={() => handleThemeChange('deep-sea')}>
           Deep Sea
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'mint')}>
+        <DropdownMenuItem onClick={() => handleThemeChange('mint')}>
           Mint
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'sunset')}>
+        <DropdownMenuItem onClick={() => handleThemeChange('sunset')}>
           Sunset
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'lavender')}>
+        <DropdownMenuItem onClick={() => handleThemeChange('lavender')}>
          Lavender
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'monochrome')}>
+        <DropdownMenuItem onClick={() => handleThemeChange('monochrome')}>
           Monochrome
         </DropdownMenuItem>
       </DropdownMenuContent>
