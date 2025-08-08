@@ -31,19 +31,22 @@ export function ThemeSwitcher() {
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("deep-sea")}>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
+          System
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'deep-sea')}>
           Deep Sea
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("mint")}>
+        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'mint')}>
           Mint
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("sunset")}>
+        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'sunset')}>
           Sunset
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("lavender")}>
+        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'lavender')}>
          Lavender
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("monochrome")}>
+        <DropdownMenuItem onClick={() => document.documentElement.setAttribute('data-theme', 'monochrome')}>
           Monochrome
         </DropdownMenuItem>
       </DropdownMenuContent>
