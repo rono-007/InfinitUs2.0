@@ -35,6 +35,22 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
   const isAssistant = message.role === 'assistant'
   const isThinking = message.id === 'thinking'
 
+  const formatMessage = (text: string) => {
+    const codeBlockRegex = /```(javascript|typescript|jsx|tsx|html|css|json)?\n([\s\S]*?)\n```/g;
+    const parts = text.split(codeBlockRegex);
+
+    return parts.map((part, index) => {
+      if (index % 3 === 2) { // This is the code content
+        const code = part;
+        const escapedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `<pre><code>${escapedCode}</code></pre>`;
+      } else if (index % 3 === 0) { // This is regular text
+        return part.replace(/\n/g, '<br/>');
+      }
+      return ''; // This is the language part, ignore for now
+    }).join('');
+  }
+
   return (
     <div className={cn("flex items-start gap-4", !isAssistant && "justify-end")}>
       {isAssistant && (
@@ -50,8 +66,8 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
             : <Bot size={20} />}</AvatarFallback>
         </Avatar>
       )}
-      <div className={cn("flex flex-col gap-1", !isAssistant && "items-end")}>
-        <div className="group relative">
+      <div className={cn("flex flex-col gap-1 w-full", !isAssistant && "items-end")}>
+        <div className="group relative max-w-max">
           {message.metadata?.isReplying && (
             <Card className="mb-2 bg-muted/50 border-l-4 border-primary/50">
               <CardContent className="p-2 text-sm text-muted-foreground truncate">
@@ -73,7 +89,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
                 </div>
               </div>
             ) : (
-            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: message.text.replace(/\\n/g, '<br/>').replace(/```(javascript|typescript|jsx|tsx|html|css|json)?\\n([\s\S]*?)\\n```/g, (match, lang, code) => `<pre><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`) }} />
+            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }} />
             )}
           </div>
           {!isThinking && !isAssistant && (
@@ -113,3 +129,5 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     </div>
   )
 }
+
+    
