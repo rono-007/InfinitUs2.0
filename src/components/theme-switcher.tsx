@@ -14,36 +14,39 @@ import {
 import { cn } from "@/lib/utils"
 
 export function ThemeSwitcher() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme, systemTheme } = useTheme()
   const [activeTheme, setActiveTheme] = React.useState(theme)
-
+  
   React.useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') || 'monochrome';
-    const dataTheme = document.documentElement.getAttribute('data-theme')
-    if (dataTheme) {
-      setActiveTheme(dataTheme)
-    } else {
-      setActiveTheme(storedTheme)
-    }
+    setActiveTheme(theme)
   }, [theme])
 
   const handleThemeChange = (selectedTheme: string) => {
-    setActiveTheme(selectedTheme)
-    localStorage.setItem('theme', selectedTheme);
     const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender', 'monochrome'].includes(selectedTheme);
-
+    
     if (isCustomTheme) {
       document.documentElement.setAttribute('data-theme', selectedTheme);
       if (selectedTheme === 'monochrome') {
         document.documentElement.classList.add('dark');
-        setTheme('dark'); 
       } else {
         document.documentElement.classList.remove('dark');
-        setTheme('light'); 
       }
+      // We still call setTheme to keep next-themes in sync
+      setTheme(selectedTheme)
     } else {
       document.documentElement.removeAttribute('data-theme');
       setTheme(selectedTheme);
+      if (selectedTheme === 'system') {
+        if (systemTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else if (selectedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }
 
