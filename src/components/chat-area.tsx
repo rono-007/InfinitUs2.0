@@ -18,20 +18,12 @@ import type { Message } from "@/lib/types"
 import { chat } from "@/ai/flows/chat"
 import { useToast } from "@/hooks/use-toast"
 import type { ChatInput } from "@/lib/ai-types"
-
-const initialMessages: Message[] = [
-  {
-    id: "1",
-    role: "assistant",
-    text: "Hello! I'm Lexi AI. How can I assist you today?",
-    timestamp: Date.now() - 20000,
-  },
-];
+import { useChat } from "@/hooks/use-chat"
+import { Bot, Sparkles } from "lucide-react"
 
 export function ChatArea() {
-  const [messages, setMessages] = React.useState<Message[]>(initialMessages)
+  const { activeChat, addMessage, isThinking, setIsThinking } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
-  const [isThinking, setIsThinking] = React.useState(false)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
@@ -43,21 +35,26 @@ export function ChatArea() {
       timestamp: Date.now(),
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
-    const newMessages = [...messages, newMessage]
-    setMessages(newMessages)
+    
+    if (activeChat) {
+        addMessage(activeChat.id, newMessage);
+    }
+    
     setIsReplying(null)
     setIsThinking(true)
 
     try {
-      const history = newMessages.slice(-10).map(m => ({ role: m.role, text: m.text, isUser: m.role === 'user' }));
-      const result = await chat({ message: text, history } as ChatInput);
+      const history = activeChat?.messages.slice(-10).map(m => ({ role: m.role, text: m.text, isUser: m.role === 'user' })) || [];
+      const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }] } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
         role: 'assistant',
         text: result.message,
         timestamp: Date.now(),
       }
-      setMessages(prev => [...prev, assistantMessage])
+      if(activeChat) {
+          addMessage(activeChat.id, assistantMessage)
+      }
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({
@@ -81,7 +78,7 @@ export function ChatArea() {
             viewport.scrollTop = viewport.scrollHeight;
         }
     }
-  }, [messages])
+  }, [activeChat?.messages])
 
 
   return (
@@ -103,18 +100,32 @@ export function ChatArea() {
           </div>
         </div>
       </header>
-      <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
-        <div className="space-y-6 max-w-4xl mx-auto">
-          {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} onReply={handleReply} />
-          ))}
-          {isThinking && <ChatMessage key="thinking" message={{id: "thinking", role: "assistant", text: "...", timestamp: Date.now()}} onReply={() => {}} />}
+
+      {activeChat && activeChat.messages.length > 0 ? (
+        <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+          <div className="space-y-6 max-w-4xl mx-auto">
+            {activeChat.messages.map((message) => (
+              <ChatMessage key={message.id} message={message} onReply={handleReply} />
+            ))}
+            {isThinking && <ChatMessage key="thinking" message={{id: "thinking", role: "assistant", text: "...", timestamp: Date.now()}} onReply={() => {}} />}
+          </div>
+          <ScrollBar />
+        </ScrollArea>
+      ) : (
+        <div className="flex-grow flex flex-col items-center justify-center">
+            <div className="text-center">
+                <div className="inline-block p-4 bg-primary/10 rounded-full">
+                    <Bot size={40} className="text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold mt-4">Lexi AI</h2>
+                <p className="text-muted-foreground">Start a new conversation</p>
+            </div>
         </div>
-        <ScrollBar />
-      </ScrollArea>
+      )}
+
       <div className="p-4 border-t bg-background">
         <div className="max-w-4xl mx-auto">
-          <SuggestionCarousel onSuggestionClick={handleSendMessage} />
+          {(!activeChat || activeChat.messages.length === 0) && <SuggestionCarousel onSuggestionClick={handleSendMessage} />}
           <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking} />
         </div>
       </div>

@@ -14,15 +14,12 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Bot, MessageSquarePlus, Settings } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-
-const chatHistory = [
-  { id: 1, title: "React best practices", lastMessage: "Sure, let's start with hooks...", timestamp: "2h ago" },
-  { id: 2, title: "Next.js 14 features", lastMessage: "The App Router is a game changer.", timestamp: "Yesterday" },
-  { id: 3, title: "How to style with Tailwind", lastMessage: "Utility-first is the way to go.", timestamp: "3d ago" },
-  { id: 4, title: "Kubernetes deployment", lastMessage: "You'll need a Dockerfile first.", timestamp: "1w ago" },
-]
+import { useChat } from "@/hooks/use-chat"
+import { formatDistanceToNow } from "date-fns"
 
 export function LexiSidebar() {
+  const { chatSessions, activeChat, setActiveChat, createNewChat } = useChat();
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -36,19 +33,26 @@ export function LexiSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-0">
         <div className="p-2">
-          <Button variant="secondary" className="w-full justify-start">
+          <Button variant="secondary" className="w-full justify-start" onClick={createNewChat}>
             <MessageSquarePlus className="mr-2" />
             <span className="group-data-[collapsible=icon]:hidden">New Chat</span>
           </Button>
         </div>
         <ScrollArea className="h-full px-2">
           <SidebarMenu>
-            {chatHistory.map((chat) => (
+            {chatSessions.map((chat) => (
               <SidebarMenuItem key={chat.id}>
-                <SidebarMenuButton className="h-auto flex-col items-start p-2" tooltip={chat.title}>
+                <SidebarMenuButton 
+                  className="h-auto flex-col items-start p-2" 
+                  tooltip={chat.title}
+                  isActive={activeChat?.id === chat.id}
+                  onClick={() => setActiveChat(chat.id)}
+                >
                   <span className="w-full font-semibold">{chat.title}</span>
-                  <span className="w-full text-xs text-muted-foreground">{chat.lastMessage}</span>
-                  <span className="w-full text-xs text-muted-foreground/70 self-end text-right">{chat.timestamp}</span>
+                  <span className="w-full text-xs text-muted-foreground truncate">{chat.messages[chat.messages.length -1]?.text || "New Chat"}</span>
+                  <span className="w-full text-xs text-muted-foreground/70 self-end text-right">
+                    {chat.messages.length > 0 ? formatDistanceToNow(chat.messages[chat.messages.length - 1].timestamp, { addSuffix: true }) : ''}
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -66,7 +70,7 @@ export function LexiSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton tooltip="Profile">
               <Avatar className="h-6 w-6">
-                 <AvatarImage src="https://placehold.co/40x40" alt="User Avatar" />
+                 <AvatarImage src="https://placehold.co/40x40" alt="User Avatar" data-ai-hint="person face" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
               <span className="group-data-[collapsible=icon]:hidden">User Profile</span>

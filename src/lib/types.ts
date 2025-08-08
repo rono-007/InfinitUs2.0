@@ -17,3 +17,10 @@ export type Message = {
     originalText?: string;
   };
 };
+
+export type ChatSession = {
+    id: string;
+    title: string;
+    messages: Message[];
+    timestamp: number;
+}
