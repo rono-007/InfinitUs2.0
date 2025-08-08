@@ -2,15 +2,9 @@
 
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
 import { getSuggestions } from "@/ai/flows/suggestion-carousel"
 import type { SuggestionOutput } from "@/lib/ai-types"
 import { Skeleton } from "./ui/skeleton"
-import Autoplay from "embla-carousel-autoplay"
 
 interface SuggestionCarouselProps {
     onSuggestionClick: (suggestion: string) => void;
@@ -42,37 +36,29 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
   }, [])
 
   return (
-    <div className="mb-4">
-      <Carousel 
-        plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
-        opts={{ align: "start", loop: true }} 
-        className="w-full"
-      >
-        <CarouselContent>
-          {loading
-            ? Array.from({ length: 4 }).map((_, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Skeleton className="h-[80px] w-full" />
-                  </div>
-                </CarouselItem>
-              ))
-            : suggestions.map((suggestion, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card 
-                        className="h-[80px] shadow-sm bg-transparent hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg border"
-                        onClick={() => onSuggestionClick(suggestion)}
-                    >
-                      <CardContent className="flex items-center justify-center p-4 text-center">
-                        <span className="text-sm font-medium">{suggestion}</span>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-        </CarouselContent>
-      </Carousel>
+    <div className="relative w-full overflow-hidden mb-4">
+        <div className="flex animate-marquee">
+            {loading ? (
+                Array.from({ length: 8 }).map((_, index) => (
+                    <div key={index} className="p-1 flex-shrink-0">
+                        <Skeleton className="h-[80px] w-[200px]" />
+                    </div>
+                ))
+            ) : (
+                [...suggestions, ...suggestions].map((suggestion, index) => (
+                    <div key={index} className="p-1 flex-shrink-0">
+                        <Card 
+                            className="h-[80px] w-[200px] shadow-sm bg-transparent hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg border"
+                            onClick={() => onSuggestionClick(suggestion)}
+                        >
+                            <CardContent className="flex items-center justify-center p-4 text-center">
+                                <span className="text-sm font-medium">{suggestion}</span>
+                            </CardContent>
+                        </Card>
+                    </div>
+                ))
+            )}
+        </div>
     </div>
   )
 }
