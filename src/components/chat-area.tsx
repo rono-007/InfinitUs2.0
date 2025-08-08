@@ -23,12 +23,17 @@ import { Bot } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 
 export function ChatArea() {
-  const { activeChat, addMessage, isThinking, setIsThinking } = useChat();
+  const { activeChat, addMessage, createNewChat, isThinking, setIsThinking } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
   const handleSendMessage = async (text: string) => {
+    let currentChat = activeChat;
+    if (!currentChat) {
+      currentChat = createNewChat();
+    }
+
     const newMessage: Message = {
       id: String(Date.now()),
       role: 'user',
@@ -37,15 +42,13 @@ export function ChatArea() {
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
     
-    if (activeChat) {
-        addMessage(activeChat.id, newMessage);
-    }
+    addMessage(currentChat.id, newMessage);
     
     setIsReplying(null)
     setIsThinking(true)
 
     try {
-      const history = activeChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
+      const history = currentChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
       const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }] } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -53,9 +56,7 @@ export function ChatArea() {
         text: result.message,
         timestamp: Date.now(),
       }
-      if(activeChat) {
-          addMessage(activeChat.id, assistantMessage)
-      }
+      addMessage(currentChat.id, assistantMessage)
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({

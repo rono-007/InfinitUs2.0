@@ -9,7 +9,7 @@ interface ChatContextType {
   isThinking: boolean;
   setActiveChat: (chatId: string) => void;
   addMessage: (chatId: string, message: Message) => void;
-  createNewChat: () => void;
+  createNewChat: () => ChatSession;
   setIsThinking: (isThinking: boolean) => void;
 }
 
@@ -31,6 +31,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     };
     setChatSessions(prev => [newChat, ...prev]);
     setActiveChatId(newChat.id);
+    return newChat;
   };
 
   const setActiveChat = (chatId: string) => {
