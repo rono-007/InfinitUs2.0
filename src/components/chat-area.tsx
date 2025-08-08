@@ -19,7 +19,7 @@ import { chat } from "@/ai/flows/chat"
 import { useToast } from "@/hooks/use-toast"
 import type { ChatInput } from "@/lib/ai-types"
 import { useChat } from "@/hooks/use-chat"
-import { Bot, Infinity } from "lucide-react"
+import { Infinity } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip"
@@ -141,7 +141,7 @@ export function ChatArea() {
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="text-center">
-                <div className="inline-block p-4 rounded-full shadow-2xl shadow-white/50">
+                <div className="inline-block p-4 rounded-full shadow-[0_0_30px_10px_white]">
                     <Infinity size={40} className="text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold text-center font-headline mt-4">InfinitUs 2.0</h2>
