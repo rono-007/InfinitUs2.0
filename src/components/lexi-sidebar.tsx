@@ -18,17 +18,21 @@ import { useChat } from "@/hooks/use-chat"
 import { formatDistanceToNow } from "date-fns"
 
 const InfinitUsLogo = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 12"
       {...props}
     >
-      <path
-        d="M7.13527 6C7.13527 4.34315 8.47841 3 10.1353 3C11.7921 3 13.1353 4.34315 13.1353 6C13.1353 7.65685 11.7921 9 10.1353 9C8.47841 9 7.13527 7.65685 7.13527 6ZM13.8647 3C15.5216 3 16.8647 4.34315 16.8647 6C16.8647 7.65685 15.5216 9 13.8647 9C12.2079 9 10.8647 7.65685 10.8647 6C10.8647 4.34315 12.2079 3 13.8647 3Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        fill="none"
-      />
+        <path 
+            d="M15.7,6.2c0,1.9-1.2,3.4-2.6,3.4s-2.6-1.5-2.6-3.4c0-1.9,1.2-3.4,2.6-3.4S15.7,4.3,15.7,6.2z M8.3,6.2
+            c0,1.9-1.2,3.4-2.6,3.4S3,8.1,3,6.2s1.2-3.4,2.6-3.4S8.3,4.3,8.3,6.2z M20.9,6.2c0,3.5-2.2,6.4-5,6.4s-5-2.9-5-6.4
+            c0-3.5,2.2-6.4,5-6.4S20.9,2.7,20.9,6.2z M12.5,6.2c0,3.5-2.2,6.4-5,6.4S2.5,9.7,2.5,6.2c0-3.5,2.2-6.4,5-6.4
+            S12.5,2.7,12.5,6.2z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeMiterlimit="10"
+        />
     </svg>
 )
 
