@@ -1,0 +1,19 @@
+export type Attachment = {
+  id: string;
+  type: 'pdf' | 'image' | 'docx' | 'txt';
+  name: string;
+};
+
+export type Message = {
+  id: string;
+  role: 'user' | 'assistant';
+  text: string;
+  attachments?: Attachment[];
+  timestamp: number;
+  tone?: string;
+  inReplyTo?: string;
+  metadata?: {
+    isReplying?: boolean;
+    originalText?: string;
+  };
+};
