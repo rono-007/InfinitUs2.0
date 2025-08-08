@@ -3,8 +3,6 @@
  * @fileOverview A flow that provides chat functionality.
  *
  * - chat - A function that returns a response to a user's message.
- * - ChatInput - The input type for the chat function.
- * - ChatOutput - The return type for the chat function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -25,18 +23,17 @@ Continue the following conversation.
 
 {{#each history}}
   {{#if this.isUser}}
-    User: {{this.text}}
+    User: {{{this.text}}}
   {{else}}
-    Lexi: {{this.text}}
+    Lexi: {{{this.text}}}
   {{/if}}
 {{/each}}
 
-User: {{message}}
+User: {{{message}}}
 Lexi:
 `,
-  config: {
-    model: 'googleai/gemini-2.0-flash',
-  },
+  model: 'googleai/gemini-2.0-flash',
+  config: {},
 });
 
 const chatFlow = ai.defineFlow(
