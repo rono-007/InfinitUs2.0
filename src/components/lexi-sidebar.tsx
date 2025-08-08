@@ -8,16 +8,22 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuAction,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bot, MessageSquarePlus, Settings } from "lucide-react"
+import { Bot, MessageSquarePlus, Settings, Trash2 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useChat } from "@/hooks/use-chat"
 import { formatDistanceToNow } from "date-fns"
 
 export function LexiSidebar() {
-  const { chatSessions, activeChat, setActiveChat, createNewChat } = useChat();
+  const { chatSessions, activeChat, setActiveChat, createNewChat, deleteChat } = useChat();
+
+  const handleDeleteChat = (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+    deleteChat(chatId);
+  }
 
   return (
     <Sidebar>
@@ -52,6 +58,9 @@ export function LexiSidebar() {
                     {chat.messages.length > 0 ? formatDistanceToNow(chat.messages[chat.messages.length - 1].timestamp, { addSuffix: true }) : ''}
                   </span>
                 </SidebarMenuButton>
+                <SidebarMenuAction showOnHover onClick={(e) => handleDeleteChat(e, chat.id)}>
+                    <Trash2 />
+                </SidebarMenuAction>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>

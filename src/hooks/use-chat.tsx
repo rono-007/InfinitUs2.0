@@ -11,6 +11,7 @@ interface ChatContextType {
   addMessage: (chatId: string, message: Message) => void;
   createNewChat: () => ChatSession;
   setIsThinking: (isThinking: boolean) => void;
+  deleteChat: (chatId: string) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -55,8 +56,18 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const deleteChat = (chatId: string) => {
+    setChatSessions(prevSessions => {
+        const newSessions = prevSessions.filter(session => session.id !== chatId);
+        if (activeChatId === chatId) {
+            setActiveChatId(newSessions.length > 0 ? newSessions[0].id : null);
+        }
+        return newSessions;
+    });
+  };
+
   return (
-    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, setActiveChat, addMessage, createNewChat, setIsThinking }}>
+    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, setActiveChat, addMessage, createNewChat, setIsThinking, deleteChat }}>
       {children}
     </ChatContext.Provider>
   );
