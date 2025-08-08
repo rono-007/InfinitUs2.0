@@ -19,7 +19,8 @@ import { chat } from "@/ai/flows/chat"
 import { useToast } from "@/hooks/use-toast"
 import type { ChatInput } from "@/lib/ai-types"
 import { useChat } from "@/hooks/use-chat"
-import { Bot, Sparkles } from "lucide-react"
+import { Bot } from "lucide-react"
+import { SidebarTrigger } from "./ui/sidebar"
 
 export function ChatArea() {
   const { activeChat, addMessage, isThinking, setIsThinking } = useChat();
@@ -44,7 +45,7 @@ export function ChatArea() {
     setIsThinking(true)
 
     try {
-      const history = activeChat?.messages.slice(-10).map(m => ({ role: m.role, text: m.text, isUser: m.role === 'user' })) || [];
+      const history = activeChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
       const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }] } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -84,7 +85,10 @@ export function ChatArea() {
   return (
     <div className="flex flex-col h-screen">
       <header className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold font-headline">Chat</h2>
+        <div className="flex items-center gap-2">
+            <SidebarTrigger />
+            <h2 className="text-lg font-semibold font-headline">Chat</h2>
+        </div>
         <div className="flex items-center gap-4">
           <Select defaultValue="gemini-2.0-flash">
             <SelectTrigger className="w-[180px]">

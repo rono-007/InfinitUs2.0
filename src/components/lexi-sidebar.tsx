@@ -8,7 +8,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -29,7 +28,6 @@ export function LexiSidebar() {
           </div>
           <h1 className="text-xl font-semibold font-headline">Lexi AI</h1>
         </div>
-        <SidebarTrigger />
       </SidebarHeader>
       <SidebarContent className="p-0">
         <div className="p-2">
