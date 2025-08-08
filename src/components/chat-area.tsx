@@ -21,12 +21,14 @@ import type { ChatInput } from "@/lib/ai-types"
 import { useChat } from "@/hooks/use-chat"
 import { Bot } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function ChatArea() {
   const { activeChat, addMessage, createNewChat, isThinking, setIsThinking } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+  const isMobile = useIsMobile()
 
   const handleSendMessage = async (text: string) => {
     let currentChat = activeChat;
@@ -99,7 +101,7 @@ export function ChatArea() {
               <SelectItem value="gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
             </SelectContent>
           </Select>
-          <div className="items-center space-x-2 hidden sm:flex">
+          <div className="items-center gap-2 hidden sm:flex">
             <Switch id="privacy-mode" />
             <Label htmlFor="privacy-mode">Privacy</Label>
           </div>
@@ -130,7 +132,7 @@ export function ChatArea() {
 
       <div className="p-4 bg-background">
         <div className="max-w-7xl mx-auto">
-          {(!activeChat || activeChat.messages.length === 0) && <SuggestionCarousel onSuggestionClick={handleSendMessage} />}
+          {(!activeChat || activeChat.messages.length === 0) && !isMobile && <SuggestionCarousel onSuggestionClick={handleSendMessage} />}
           <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking} />
         </div>
       </div>
