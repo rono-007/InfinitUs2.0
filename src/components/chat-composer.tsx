@@ -4,7 +4,7 @@ import * as React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BrainCircuit, Loader, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
+import { BrainCircuit, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
 import type { Message } from "@/lib/types"
 import { Card, CardContent } from "./ui/card"
 
@@ -69,7 +69,13 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           <Paperclip />
         </Button>
         <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={handleSend} disabled={isThinking}>
-          {isThinking ? <Loader className="animate-spin" /> : <Send />}
+          {isThinking ? (
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot"></span>
+            </div>
+          ) : <Send />}
         </Button>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2">

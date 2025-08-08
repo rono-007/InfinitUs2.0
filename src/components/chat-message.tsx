@@ -4,7 +4,7 @@ import * as React from "react"
 import type { Message } from "@/lib/types"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Bot, Copy, CornerUpLeft, User, Loader } from "lucide-react"
+import { Bot, Copy, CornerUpLeft, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "./ui/card"
@@ -39,10 +39,18 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     <div className={cn("flex items-start gap-4", !isAssistant && "justify-end")}>
       {isAssistant && (
         <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback>{isThinking ? <Loader className="animate-spin" /> : <Bot size={20} />}</AvatarFallback>
+          <AvatarFallback>{isThinking ? 
+            <div className="flex items-center justify-center p-2">
+                <div className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot"></span>
+                </div>
+            </div>
+            : <Bot size={20} />}</AvatarFallback>
         </Avatar>
       )}
-      <div className={cn("flex flex-col gap-1 max-w-[85%]", !isAssistant && "items-end")}>
+      <div className={cn("flex flex-col gap-1", !isAssistant && "items-end")}>
         <div className="group relative">
           {message.metadata?.isReplying && (
             <Card className="mb-2 bg-muted/50 border-l-4 border-primary/50">
@@ -52,7 +60,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
             </Card>
           )}
           <div className={cn(
-            "p-4 rounded-lg min-w-[60px]",
+            "p-4 rounded-lg",
             isAssistant ? "bg-card rounded-tl-none" : "bg-primary text-primary-foreground rounded-br-none",
             isThinking && "p-2"
           )}>
