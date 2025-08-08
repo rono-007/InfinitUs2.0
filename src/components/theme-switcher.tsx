@@ -11,42 +11,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
 
 export function ThemeSwitcher() {
-  const { setTheme, theme, systemTheme } = useTheme()
-  const [activeTheme, setActiveTheme] = React.useState(theme)
+  const { setTheme, theme } = useTheme()
   
-  React.useEffect(() => {
-    setActiveTheme(theme)
-  }, [theme])
-
   const handleThemeChange = (selectedTheme: string) => {
-    const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender', 'monochrome'].includes(selectedTheme);
-    
-    if (isCustomTheme) {
-      document.documentElement.setAttribute('data-theme', selectedTheme);
-      if (selectedTheme === 'monochrome') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      // We still call setTheme to keep next-themes in sync
-      setTheme(selectedTheme)
+    setTheme(selectedTheme)
+    if (selectedTheme === 'monochrome') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'monochrome');
     } else {
-      document.documentElement.removeAttribute('data-theme');
-      setTheme(selectedTheme);
-      if (selectedTheme === 'system') {
-        if (systemTheme === 'dark') {
-          document.documentElement.classList.add('dark');
+        const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender'].includes(selectedTheme);
+        if(isCustomTheme) {
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            document.documentElement.classList.remove('dark');
         } else {
-          document.documentElement.classList.remove('dark');
+            document.documentElement.removeAttribute('data-theme');
         }
-      } else if (selectedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
     }
   }
 
@@ -74,7 +55,7 @@ export function ThemeSwitcher() {
         {themes.map(({ name, label }) => (
           <DropdownMenuItem key={name} onClick={() => handleThemeChange(name)} className="justify-between">
             {label}
-            {activeTheme === name && <Check className="h-4 w-4" />}
+            {theme === name && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
