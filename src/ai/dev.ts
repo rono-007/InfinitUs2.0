@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/ai-explain.ts';
 import '@/ai/flows/suggestion-carousel.ts';
+import '@/ai/flows/chat.ts';

@@ -17,10 +17,6 @@ const ExplainOutputSchema = z.object({
 });
 export type ExplainOutput = z.infer<typeof ExplainOutputSchema>;
 
-export async function aiExplain(input: ExplainInput): Promise<ExplainOutput> {
-  return aiExplainFlow(input);
-}
-
 const explainPrompt = ai.definePrompt({
   name: 'explainPrompt',
   input: {schema: ExplainInputSchema},
@@ -50,3 +46,7 @@ const aiExplainFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export async function aiExplain(input: ExplainInput): Promise<ExplainOutput> {
+  return aiExplainFlow(input);
+}

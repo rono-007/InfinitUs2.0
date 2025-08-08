@@ -15,6 +15,8 @@ import { ChatMessage } from "./chat-message"
 import { SuggestionCarousel } from "./suggestion-carousel"
 import { ChatComposer } from "./chat-composer"
 import type { Message } from "@/lib/types"
+import { chat } from "@/ai/flows/chat"
+import { useToast } from "@/hooks/use-toast"
 
 const initialMessages: Message[] = [
   {
@@ -23,54 +25,16 @@ const initialMessages: Message[] = [
     text: "Hello! I'm Lexi AI. How can I assist you today?",
     timestamp: Date.now() - 20000,
   },
-  {
-    id: "2",
-    role: "user",
-    text: "Can you explain what React Hooks are?",
-    timestamp: Date.now() - 10000,
-  },
-  {
-    id: "3",
-    role: "assistant",
-    text: `Of course! React Hooks are functions that let you “hook into” React state and lifecycle features from function components. They were introduced in React 16.8 and allow you to use state and other React features without writing a class.
-
-### Key Hooks
-
-- **useState**: Lets you add React state to function components.
-- **useEffect**: Lets you perform side effects in function components. It's a close replacement for \`componentDidMount\`, \`componentDidUpdate\`, and \`componentWillUnmount\`.
-- **useContext**: Lets you subscribe to React context without introducing nesting.
-
-Here's a quick example of a counter using \`useState\`:
-
-\`\`\`javascript
-import React, { useState } from 'react';
-
-function Counter() {
-  // Declare a new state variable, which we'll call "count"
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}
-\`\`\`
-
-Would you like to dive deeper into a specific Hook?`,
-    timestamp: Date.now(),
-  },
 ];
 
 export function ChatArea() {
   const [messages, setMessages] = React.useState<Message[]>(initialMessages)
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
+  const [isThinking, setIsThinking] = React.useState(false)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     const newMessage: Message = {
       id: String(Date.now()),
       role: 'user',
@@ -78,8 +42,31 @@ export function ChatArea() {
       timestamp: Date.now(),
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
-    setMessages(prev => [...prev, newMessage])
+    const newMessages = [...messages, newMessage]
+    setMessages(newMessages)
     setIsReplying(null)
+    setIsThinking(true)
+
+    try {
+      const history = newMessages.slice(-10).map(m => ({ role: m.role, text: m.text }));
+      const result = await chat({ message: text, history });
+      const assistantMessage: Message = {
+        id: String(Date.now()),
+        role: 'assistant',
+        text: result.message,
+        timestamp: Date.now(),
+      }
+      setMessages(prev => [...prev, assistantMessage])
+    } catch (error) {
+      console.error("Failed to get AI response:", error)
+      toast({
+        title: "Error",
+        description: "Failed to get AI response. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsThinking(false)
+    }
   }
 
   const handleReply = (message: Message) => {
@@ -101,14 +88,12 @@ export function ChatArea() {
       <header className="flex items-center justify-between p-4 border-b">
         <h2 className="text-lg font-semibold font-headline">Chat</h2>
         <div className="flex items-center gap-4">
-          <Select defaultValue="gpt-4">
+          <Select defaultValue="gemini-2.0-flash">
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a model" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="gpt-4">GPT-4 Turbo</SelectItem>
-              <SelectItem value="gpt-3.5">GPT-3.5 Turbo</SelectItem>
-              <SelectItem value="claude-3">Claude 3 Opus</SelectItem>
+              <SelectItem value="gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex items-center space-x-2">
@@ -122,13 +107,14 @@ export function ChatArea() {
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} onReply={handleReply} />
           ))}
+          {isThinking && <ChatMessage key="thinking" message={{id: "thinking", role: "assistant", text: "...", timestamp: Date.now()}} onReply={() => {}} />}
         </div>
         <ScrollBar />
       </ScrollArea>
       <div className="p-4 border-t bg-background">
         <div className="max-w-4xl mx-auto">
           <SuggestionCarousel onSuggestionClick={handleSendMessage} />
-          <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} />
+          <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking} />
         </div>
       </div>
     </div>

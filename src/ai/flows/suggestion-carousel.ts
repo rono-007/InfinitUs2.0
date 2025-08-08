@@ -12,10 +12,6 @@ import {z} from 'genkit';
 const SuggestionOutputSchema = z.array(z.string().describe('A suggested question to ask the chatbot.'));
 export type SuggestionOutput = z.infer<typeof SuggestionOutputSchema>;
 
-export async function getSuggestions(): Promise<SuggestionOutput> {
-  return suggestionCarouselFlow();
-}
-
 const suggestionCarouselPrompt = ai.definePrompt({
   name: 'suggestionCarouselPrompt',
   output: {schema: SuggestionOutputSchema},
@@ -36,3 +32,7 @@ const suggestionCarouselFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export async function getSuggestions(): Promise<SuggestionOutput> {
+  return suggestionCarouselFlow();
+}

@@ -4,7 +4,7 @@ import * as React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BrainCircuit, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
+import { BrainCircuit, Loader, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
 import type { Message } from "@/lib/types"
 import { Card, CardContent } from "./ui/card"
 
@@ -12,14 +12,15 @@ interface ChatComposerProps {
   onSendMessage: (message: string) => void
   replyingTo: Message | null
   onClearReply: () => void
+  isThinking: boolean
 }
 
-export function ChatComposer({ onSendMessage, replyingTo, onClearReply }: ChatComposerProps) {
+export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinking }: ChatComposerProps) {
   const [message, setMessage] = React.useState("")
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
   const handleSend = () => {
-    if (message.trim()) {
+    if (message.trim() && !isThinking) {
       onSendMessage(message)
       setMessage("")
     }
@@ -62,21 +63,22 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply }: ChatCo
           placeholder="Type your message..."
           className="pr-24 min-h-[52px] resize-none"
           rows={1}
+          disabled={isThinking}
         />
-        <Button size="icon" variant="ghost" className="absolute right-12 top-1/2 -translate-y-1/2">
+        <Button size="icon" variant="ghost" className="absolute right-12 top-1/2 -translate-y-1/2" disabled={isThinking}>
           <Paperclip />
         </Button>
-        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={handleSend}>
-          <Send />
+        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={handleSend} disabled={isThinking}>
+          {isThinking ? <Loader className="animate-spin" /> : <Send />}
         </Button>
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" disabled={isThinking}>
             <Sparkles className="mr-2" />
             Explain
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" disabled={isThinking}>
             <BrainCircuit className="mr-2" />
             Think Longer
           </Button>
@@ -84,7 +86,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply }: ChatCo
         <div className="flex items-center gap-2">
           <Smile className="text-muted-foreground" />
           <Select defaultValue="casual">
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-[120px]" disabled={isThinking}>
               <SelectValue placeholder="Tone" />
             </SelectTrigger>
             <SelectContent>
