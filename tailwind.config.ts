@@ -101,13 +101,19 @@ export default {
               transform: 'translateY(0)',
               animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
             },
-        }
+        },
+        'rainbow-glow': {
+          '0%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+          '100%': { 'background-position': '0% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'marquee': 'marquee 30s linear infinite',
         'bounce-dot': 'bounce-dot 1s infinite',
+        'rainbow-glow': 'rainbow-glow 4s linear infinite',
       },
     },
   },
