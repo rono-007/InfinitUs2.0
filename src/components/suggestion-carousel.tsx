@@ -46,7 +46,7 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
   return (
     <div className="mb-4">
       <Carousel 
-        plugins={[Autoplay({ delay: 2000, stopOnInteraction: true })]}
+        plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]}
         opts={{ align: "start", loop: true }} 
         className="w-full"
       >
