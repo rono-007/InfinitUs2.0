@@ -25,7 +25,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { ThemeSwitcher } from "./theme-switcher"
 
 export function ChatArea() {
-  const { activeChat, addMessage, createNewChat, isThinking, setIsThinking } = useChat();
+  const { activeChat, addMessage, createNewChat, isThinking, setIsThinking, isPrivacyMode, setIsPrivacyMode } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const [selectedModel, setSelectedModel] = React.useState("googleai/gemini-2.0-flash")
   const viewportRef = React.useRef<HTMLDivElement>(null)
@@ -35,7 +35,11 @@ export function ChatArea() {
   const handleSendMessage = async (text: string, model?: string) => {
     let currentChat = activeChat;
     if (!currentChat) {
-      currentChat = createNewChat();
+      // If in privacy mode, we don't create a new chat that gets saved.
+      // addMessage will handle creating a temporary one.
+      if (!isPrivacyMode) {
+        currentChat = createNewChat();
+      }
     }
 
     const newMessage: Message = {
@@ -46,13 +50,15 @@ export function ChatArea() {
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
     
-    addMessage(currentChat.id, newMessage);
+    // Pass the current chat's ID, or null if it's a new private chat
+    addMessage(currentChat?.id ?? null, newMessage);
     
     setIsReplying(null)
     setIsThinking(true)
 
     try {
-      const history = currentChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
+      // Use the messages from the active chat (which might be temporary) for history
+      const history = activeChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
       const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }], model: model || selectedModel } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -60,7 +66,7 @@ export function ChatArea() {
         text: result.message,
         timestamp: Date.now(),
       }
-      addMessage(currentChat.id, assistantMessage)
+      addMessage(activeChat?.id ?? null, assistantMessage)
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({
@@ -106,7 +112,7 @@ export function ChatArea() {
             </SelectContent>
           </Select>
           <div className="items-center gap-2 hidden sm:flex">
-            <Switch id="privacy-mode" />
+            <Switch id="privacy-mode" checked={isPrivacyMode} onCheckedChange={setIsPrivacyMode} />
             <Label htmlFor="privacy-mode">Privacy</Label>
           </div>
         </div>
