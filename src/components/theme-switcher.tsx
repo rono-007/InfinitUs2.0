@@ -18,16 +18,18 @@ export function ThemeSwitcher() {
   const [activeTheme, setActiveTheme] = React.useState(theme)
 
   React.useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') || 'monochrome';
     const dataTheme = document.documentElement.getAttribute('data-theme')
     if (dataTheme) {
       setActiveTheme(dataTheme)
     } else {
-      setActiveTheme(theme)
+      setActiveTheme(storedTheme)
     }
   }, [theme])
 
   const handleThemeChange = (selectedTheme: string) => {
     setActiveTheme(selectedTheme)
+    localStorage.setItem('theme', selectedTheme);
     const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender', 'monochrome'].includes(selectedTheme);
 
     if (isCustomTheme) {
