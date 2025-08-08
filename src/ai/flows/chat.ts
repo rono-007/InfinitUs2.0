@@ -33,10 +33,11 @@ const chatPrompt = ai.definePrompt({
 Continue the following conversation.
 
 {{#each history}}
-{{#if (eq role 'user')}}
-User: {{text}}
-{{else}}
-Lexi: {{text}}
+{{#if (this.role === 'user')}}
+User: {{this.text}}
+{{/if}}
+{{#if (this.role === 'assistant')}}
+Lexi: {{this.text}}
 {{/if}}
 {{/each}}
 
