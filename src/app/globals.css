@@ -203,18 +203,6 @@
     @apply font-code;
   }
 
-  pre {
-    @apply bg-muted/50 p-4 rounded-md overflow-x-auto my-4;
-  }
-  
-  code {
-    @apply bg-muted/50 px-1 py-0.5 rounded-sm;
-  }
-
-  pre > code {
-    @apply bg-transparent p-0;
-  }
-
   ul, ol {
     @apply pl-6 my-4 space-y-2;
   }

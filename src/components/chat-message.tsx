@@ -8,6 +8,8 @@ import { Bot, Copy, CornerUpLeft, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "./ui/card"
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface ChatMessageProps {
   message: Message
@@ -24,11 +26,11 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     }
   }, [message.timestamp])
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(message.text)
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text)
     toast({
       title: "Copied to clipboard!",
-      description: "The message has been copied.",
+      description: "The code has been copied.",
     })
   }
 
@@ -36,20 +38,44 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
   const isThinking = message.id === 'thinking'
 
   const formatMessage = (text: string) => {
-    const codeBlockRegex = /```(javascript|typescript|jsx|tsx|html|css|json)?\n([\s\S]*?)\n```/g;
+    const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
     const parts = text.split(codeBlockRegex);
 
     return parts.map((part, index) => {
       if (index % 3 === 2) { // This is the code content
-        const code = part;
-        const escapedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        return `<pre><code>${escapedCode}</code></pre>`;
+        const language = parts[index - 1] || 'plaintext';
+        return (
+          <div key={index} className="relative my-4">
+             <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-6 w-6"
+                onClick={() => handleCopy(part)}
+              >
+                <Copy size={14} />
+              </Button>
+            <SyntaxHighlighter
+              language={language}
+              style={vscDarkPlus}
+              customStyle={{ margin: 0, borderRadius: '0.5rem' }}
+              codeTagProps={{ style: { fontFamily: 'inherit' } }}
+            >
+              {part}
+            </SyntaxHighlighter>
+          </div>
+        );
       } else if (index % 3 === 0) { // This is regular text
-        return part.replace(/\n/g, '<br/>');
+        return part.split('\n').map((line, i) => (
+          <span key={i}>
+            {line}
+            {i !== part.split('\n').length - 1 && <br />}
+          </span>
+        ));
       }
-      return ''; // This is the language part, ignore for now
-    }).join('');
+      return null;
+    });
   }
+
 
   return (
     <div className={cn("flex items-start gap-4", !isAssistant && "justify-end")}>
@@ -66,7 +92,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
             : <Bot size={20} />}</AvatarFallback>
         </Avatar>
       )}
-      <div className={cn("flex flex-col gap-1 w-full", !isAssistant && "items-end")}>
+      <div className={cn("flex flex-col gap-1 w-auto max-w-[80%]", !isAssistant && "items-end")}>
         <div className="group relative max-w-max">
           {message.metadata?.isReplying && (
             <Card className="mb-2 bg-muted/50 border-l-4 border-primary/50">
@@ -89,7 +115,9 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
                 </div>
               </div>
             ) : (
-            <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }} />
+            <div className="prose prose-sm dark:prose-invert max-w-none prose-p:m-0">
+                {formatMessage(message.text)}
+            </div>
             )}
           </div>
           {!isThinking && !isAssistant && (
@@ -98,7 +126,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onReply(message)}>
                   <CornerUpLeft size={14} />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy}>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(message.text)}>
                   <Copy size={14} />
                 </Button>
               </div>
@@ -107,7 +135,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
           {!isThinking && isAssistant && (
             <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="flex items-center gap-1 p-1 bg-card/50 backdrop-blur-sm rounded-md border">
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(message.text)}>
                         <Copy size={14} />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onReply(message)}>
@@ -129,5 +157,3 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     </div>
   )
 }
-
-    
