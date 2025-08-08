@@ -129,7 +129,7 @@ export function ChatArea() {
                     <Bot size={40} className="text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold mt-4">InfinitUs 2.0</h2>
-                <p className="text-muted-foreground">Start a new conversation</p>
+                <p className="text-muted-foreground">Infinite possibilities, one question away.</p>
             </div>
         </div>
       )}
