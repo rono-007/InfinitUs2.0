@@ -23,6 +23,7 @@ import { Bot } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { ThemeSwitcher } from "./theme-switcher"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip"
 
 export function ChatArea() {
   const { activeChat, addMessage, createNewChat, isThinking, setIsThinking, isPrivacyMode, setIsPrivacyMode } = useChat();
@@ -113,7 +114,16 @@ export function ChatArea() {
           </Select>
           <div className="items-center gap-2 hidden sm:flex">
             <Switch id="privacy-mode" checked={isPrivacyMode} onCheckedChange={setIsPrivacyMode} />
-            <Label htmlFor="privacy-mode">Privacy</Label>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Label htmlFor="privacy-mode">Privacy</Label>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p className="max-w-xs">When enabled, your chat history would be temporary and wouldn't be stored. Currently, your chats are stored in your browser's memory for this session</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </header>
