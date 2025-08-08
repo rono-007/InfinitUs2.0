@@ -27,7 +27,7 @@ export function ThemeSwitcher() {
   const darkThemes = [
     { name: "dark", label: "Dark" },
     { name: "deep-sea", label: "Deep Sea" },
-    { name: "lavender", label: "Lavender" },
+    { name: "dark-monochrome", label: "Dark Monochrome" },
   ]
 
   return (

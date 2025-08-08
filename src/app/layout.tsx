@@ -24,7 +24,7 @@ export default function RootLayout({
         <ThemeProvider
             attribute="data-theme"
             defaultTheme="light"
-            themes={['light', 'dark', 'mint', 'sunset', 'deep-sea', 'lavender']}
+            themes={['light', 'dark', 'mint', 'sunset', 'deep-sea', 'dark-monochrome']}
         >
           {children}
           <Toaster />
