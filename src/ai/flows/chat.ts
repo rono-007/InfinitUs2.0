@@ -32,7 +32,6 @@ Continue the following conversation.
 User: {{{message}}}
 Lexi:
 `,
-  model: 'googleai/gemini-2.0-flash',
   config: {},
 });
 
@@ -43,7 +42,7 @@ const chatFlow = ai.defineFlow(
     outputSchema: ChatOutputSchema,
   },
   async input => {
-    const {output} = await chatPrompt(input);
+    const {output} = await chatPrompt(input, { model: input.model });
     return output!;
   }
 );

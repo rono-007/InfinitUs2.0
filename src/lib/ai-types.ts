@@ -34,6 +34,7 @@ export const ChatInputSchema = z.object({
     )
     .describe('The chat history.'),
   message: z.string().describe('The user message.'),
+  model: z.string().optional().describe('The model to use for the response.'),
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 

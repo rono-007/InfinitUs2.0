@@ -27,6 +27,7 @@ import { ThemeSwitcher } from "./theme-switcher"
 export function ChatArea() {
   const { activeChat, addMessage, createNewChat, isThinking, setIsThinking } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
+  const [selectedModel, setSelectedModel] = React.useState("googleai/gemini-2.0-flash")
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const isMobile = useIsMobile()
@@ -52,7 +53,7 @@ export function ChatArea() {
 
     try {
       const history = currentChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
-      const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }] } as ChatInput);
+      const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }], model: selectedModel } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
         role: 'assistant',
@@ -95,12 +96,16 @@ export function ChatArea() {
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <ThemeSwitcher />
-          <Select defaultValue="gemini-2.0-flash">
+          <Select value={selectedModel} onValueChange={setSelectedModel}>
             <SelectTrigger className="w-[140px] sm:w-[180px]">
               <SelectValue placeholder="Select a model" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
+                <SelectItem value="googleai/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                <SelectItem value="googleai/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                <SelectItem value="googleai/gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</SelectItem>
+                <SelectItem value="googleai/gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
+                <SelectItem value="googleai/gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</SelectItem>
             </SelectContent>
           </Select>
           <div className="items-center gap-2 hidden sm:flex">
