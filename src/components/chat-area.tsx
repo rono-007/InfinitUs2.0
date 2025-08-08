@@ -141,7 +141,7 @@ export function ChatArea() {
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="text-center">
-                <div className="inline-block p-4 bg-primary/10 rounded-full">
+                <div className="inline-block p-4 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 to-transparent rounded-full">
                     <Infinity size={40} className="text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold text-center font-headline mt-4">InfinitUs 2.0</h2>
