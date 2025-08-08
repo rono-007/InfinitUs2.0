@@ -12,10 +12,25 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bot, MessageSquarePlus, Settings, Trash2 } from "lucide-react"
+import { MessageSquarePlus, Settings, Trash2 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useChat } from "@/hooks/use-chat"
 import { formatDistanceToNow } from "date-fns"
+
+const InfinitUsLogo = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 12"
+      {...props}
+    >
+        <path 
+          d="M7.13527 5.99999C7.13527 4.34314 8.47841 3 10.1353 3C11.7921 3 13.1353 4.34314 13.1353 6C13.1353 7.65685 11.7921 9 10.1353 9C8.47841 9 7.13527 7.65685 7.13527 5.99999ZM13.8647 3C15.5216 3 16.8647 4.34314 16.8647 6C16.8647 7.65685 15.5216 9 13.8647 9C12.2079 9 10.8647 7.65685 10.8647 6C10.8647 4.34314 12.2079 3 13.8647 3Z" 
+          stroke="currentColor" 
+          strokeWidth="2"
+        />
+    </svg>
+)
+
 
 export function LexiSidebar() {
   const { chatSessions, activeChat, setActiveChat, createNewChat, deleteChat } = useChat();
@@ -29,8 +44,8 @@ export function LexiSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <div className="bg-primary p-1.5 rounded-lg">
-            <Bot className="h-6 w-6 text-primary-foreground" />
+          <div className="bg-primary p-2.5 rounded-lg">
+            <InfinitUsLogo className="h-4 w-6 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-semibold font-headline">InfinitUs 2.0</h1>
         </div>
