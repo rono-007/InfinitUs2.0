@@ -72,21 +72,21 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           {isThinking ? <Loader className="animate-spin" /> : <Send />}
         </Button>
       </div>
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div className="flex w-full sm:w-auto items-center gap-2">
-          <Button variant="outline" size="sm" disabled={isThinking} className="w-full sm:w-auto">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" size="sm" disabled={isThinking}>
             <Sparkles className="mr-2" />
             Explain
           </Button>
-          <Button variant="outline" size="sm" disabled={isThinking} className="w-full sm:w-auto">
+          <Button variant="outline" size="sm" disabled={isThinking}>
             <BrainCircuit className="mr-2" />
             Think Longer
           </Button>
         </div>
-        <div className="flex w-full sm:w-auto items-center gap-2">
+        <div className="flex items-center gap-2">
           <Smile className="text-muted-foreground hidden sm:block" />
           <Select defaultValue="casual">
-            <SelectTrigger className="w-full sm:w-[120px]" disabled={isThinking}>
+            <SelectTrigger className="w-[120px]" disabled={isThinking}>
               <SelectValue placeholder="Tone" />
             </SelectTrigger>
             <SelectContent>
