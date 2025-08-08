@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BrainCircuit, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
 import type { Message } from "@/lib/types"
 import { Card, CardContent } from "./ui/card"
+import { AttachmentModal } from "./attachment-modal"
 
 interface ChatComposerProps {
   onSendMessage: (message: string) => void
@@ -17,6 +18,7 @@ interface ChatComposerProps {
 
 export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinking }: ChatComposerProps) {
   const [message, setMessage] = React.useState("")
+  const [isAttachmentModalOpen, setAttachmentModalOpen] = React.useState(false)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
   const handleSend = () => {
@@ -65,7 +67,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           rows={1}
           disabled={isThinking}
         />
-        <Button size="icon" variant="ghost" className="absolute right-12 top-1/2 -translate-y-1/2" disabled={isThinking}>
+        <Button size="icon" variant="ghost" className="absolute right-12 top-1/2 -translate-y-1/2" disabled={isThinking} onClick={() => setAttachmentModalOpen(true)}>
           <Paperclip />
         </Button>
         <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={handleSend} disabled={isThinking}>
@@ -103,6 +105,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           </Select>
         </div>
       </div>
+      <AttachmentModal isOpen={isAttachmentModalOpen} onOpenChange={setAttachmentModalOpen} />
     </div>
   )
 }
