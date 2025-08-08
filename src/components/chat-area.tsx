@@ -141,7 +141,7 @@ export function ChatArea() {
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="text-center">
-                <Infinity size={40} className="text-primary" />
+                <Infinity size={40} className="text-primary mx-auto" />
                 <h2 className="text-2xl font-bold text-center font-headline mt-4">InfinitUs 2.0</h2>
                 <p className="text-muted-foreground mt-2">Infinite possibilities, one question away.</p>
             </div>
