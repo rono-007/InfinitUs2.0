@@ -22,10 +22,6 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
   const [suggestions, setSuggestions] = React.useState<SuggestionOutput>([])
   const [loading, setLoading] = React.useState(true)
 
-  const plugin = React.useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
-  )
-
   React.useEffect(() => {
     async function fetchSuggestions() {
       try {
@@ -50,11 +46,9 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
   return (
     <div className="mb-4">
       <Carousel 
-        plugins={[plugin.current]}
+        plugins={[Autoplay({ delay: 2000, stopOnInteraction: true })]}
         opts={{ align: "start", loop: true }} 
         className="w-full"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
       >
         <CarouselContent>
           {loading
