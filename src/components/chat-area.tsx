@@ -99,7 +99,6 @@ export function ChatArea() {
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
-          <ThemeSwitcher />
           <Select value={selectedModel} onValueChange={setSelectedModel}>
             <SelectTrigger className="w-[140px] sm:w-[180px]">
               <SelectValue placeholder="Select a model" />

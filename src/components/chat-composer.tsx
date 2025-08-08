@@ -11,6 +11,7 @@ import { AttachmentModal } from "./attachment-modal"
 import { useChat } from "@/hooks/use-chat"
 import { aiExplain } from "@/ai/flows/ai-explain"
 import { useToast } from "@/hooks/use-toast"
+import { ThemeSwitcher } from "./theme-switcher"
 
 interface ChatComposerProps {
   onSendMessage: (message: string, model?: string) => void
@@ -135,16 +136,17 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Select defaultValue="casual">
-            <SelectTrigger className="w-[120px]" disabled={isThinking}>
-              <SelectValue placeholder="Tone" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="casual">Casual</SelectItem>
-              <SelectItem value="formal">Formal</SelectItem>
-              <SelectItem value="understanding">Understanding</SelectItem>
-            </SelectContent>
-          </Select>
+            <ThemeSwitcher />
+            <Select defaultValue="casual">
+                <SelectTrigger className="w-[120px]" disabled={isThinking}>
+                <SelectValue placeholder="Tone" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="casual">Casual</SelectItem>
+                <SelectItem value="formal">Formal</SelectItem>
+                <SelectItem value="understanding">Understanding</SelectItem>
+                </SelectContent>
+            </Select>
         </div>
       </div>
       <AttachmentModal isOpen={isAttachmentModalOpen} onOpenChange={setAttachmentModalOpen} />
