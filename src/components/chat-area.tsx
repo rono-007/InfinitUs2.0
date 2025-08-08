@@ -99,9 +99,9 @@ export function ChatArea() {
               <SelectItem value="gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center space-x-2">
+          <div className="items-center space-x-2 hidden sm:flex">
             <Switch id="privacy-mode" />
-            <Label htmlFor="privacy-mode" className="hidden sm:inline">Privacy</Label>
+            <Label htmlFor="privacy-mode">Privacy</Label>
           </div>
         </div>
       </header>
@@ -117,8 +117,8 @@ export function ChatArea() {
           <ScrollBar />
         </ScrollArea>
       ) : (
-        <div className="flex-grow flex flex-col items-center justify-center">
-            <div className="text-center p-4">
+        <div className="flex-grow flex flex-col items-center justify-center p-4">
+            <div className="text-center">
                 <div className="inline-block p-4 bg-primary/10 rounded-full">
                     <Bot size={40} className="text-primary" />
                 </div>

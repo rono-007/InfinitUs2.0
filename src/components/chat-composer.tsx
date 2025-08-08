@@ -75,16 +75,16 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" disabled={isThinking}>
-            <Sparkles className="mr-2" />
+            <Sparkles className="mr-2 h-4 w-4" />
             Explain
           </Button>
           <Button variant="outline" size="sm" disabled={isThinking}>
-            <BrainCircuit className="mr-2" />
+            <BrainCircuit className="mr-2 h-4 w-4" />
             Think Longer
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Smile className="text-muted-foreground hidden sm:block" />
+          <Smile className="text-muted-foreground hidden sm:block h-5 w-5" />
           <Select defaultValue="casual">
             <SelectTrigger className="w-[120px]" disabled={isThinking}>
               <SelectValue placeholder="Tone" />
