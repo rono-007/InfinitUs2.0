@@ -8,9 +8,12 @@ import { BrainCircuit, Paperclip, Send, Smile, Sparkles, X } from "lucide-react"
 import type { Message } from "@/lib/types"
 import { Card, CardContent } from "./ui/card"
 import { AttachmentModal } from "./attachment-modal"
+import { useChat } from "@/hooks/use-chat"
+import { aiExplain } from "@/ai/flows/ai-explain"
+import { useToast } from "@/hooks/use-toast"
 
 interface ChatComposerProps {
-  onSendMessage: (message: string) => void
+  onSendMessage: (message: string, model?: string) => void
   replyingTo: Message | null
   onClearReply: () => void
   isThinking: boolean
@@ -20,11 +23,51 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const [message, setMessage] = React.useState("")
   const [isAttachmentModalOpen, setAttachmentModalOpen] = React.useState(false)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const { activeChat, addMessage, setIsThinking } = useChat()
+  const { toast } = useToast()
 
-  const handleSend = () => {
+  const handleSend = (model?: string) => {
     if (message.trim() && !isThinking) {
-      onSendMessage(message)
+      onSendMessage(message, model)
       setMessage("")
+    }
+  }
+
+  const handleThinkLonger = () => {
+    handleSend("googleai/gemini-2.5-pro")
+  }
+
+  const handleExplain = async () => {
+    if (!activeChat || activeChat.messages.length === 0 || isThinking) {
+        toast({
+            title: "Nothing to explain",
+            description: "There are no messages in the chat to explain.",
+        })
+      return
+    }
+
+    setIsThinking(true)
+    try {
+      const lastMessage = activeChat.messages[activeChat.messages.length - 1]
+      const result = await aiExplain({ text: lastMessage.text })
+      
+      const assistantMessage: Message = {
+        id: String(Date.now()),
+        role: 'assistant',
+        text: result.explanation,
+        timestamp: Date.now(),
+      }
+      addMessage(activeChat.id, assistantMessage)
+
+    } catch (error) {
+      console.error("Failed to get explanation:", error)
+      toast({
+        title: "Error",
+        description: "Failed to get an explanation. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsThinking(false)
     }
   }
 
@@ -70,7 +113,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         <Button size="icon" variant="ghost" className="absolute right-12 top-1/2 -translate-y-1/2" disabled={isThinking} onClick={() => setAttachmentModalOpen(true)}>
           <Paperclip />
         </Button>
-        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={handleSend} disabled={isThinking}>
+        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => handleSend()} disabled={isThinking}>
           {isThinking ? (
             <div className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
@@ -82,11 +125,11 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" disabled={isThinking}>
+          <Button variant="outline" size="sm" disabled={isThinking} onClick={handleExplain}>
             <Sparkles className="mr-2 h-4 w-4" />
             Explain
           </Button>
-          <Button variant="outline" size="sm" disabled={isThinking}>
+          <Button variant="outline" size="sm" disabled={isThinking} onClick={handleThinkLonger}>
             <BrainCircuit className="mr-2 h-4 w-4" />
             Think Longer
           </Button>

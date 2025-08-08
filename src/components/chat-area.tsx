@@ -32,7 +32,7 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string) => {
+  const handleSendMessage = async (text: string, model?: string) => {
     let currentChat = activeChat;
     if (!currentChat) {
       currentChat = createNewChat();
@@ -53,7 +53,7 @@ export function ChatArea() {
 
     try {
       const history = currentChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
-      const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }], model: selectedModel } as ChatInput);
+      const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }], model: model || selectedModel } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
         role: 'assistant',
@@ -136,7 +136,7 @@ export function ChatArea() {
 
       <div className="p-4 bg-background">
         <div className="max-w-4xl mx-auto">
-          {(!activeChat || activeChat.messages.length === 0) && !isMobile && <SuggestionCarousel onSuggestionClick={handleSendMessage} />}
+          {(!activeChat || activeChat.messages.length === 0) && !isMobile && <SuggestionCarousel onSuggestionClick={(suggestion) => handleSendMessage(suggestion)} />}
           <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking} />
         </div>
       </div>
