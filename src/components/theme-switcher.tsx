@@ -14,20 +14,11 @@ import {
 
 export function ThemeSwitcher() {
   const { setTheme, theme } = useTheme()
-  
+
   const handleThemeChange = (selectedTheme: string) => {
     setTheme(selectedTheme)
     if (selectedTheme === 'monochrome') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'monochrome');
-    } else {
-        const isCustomTheme = ['deep-sea', 'mint', 'sunset', 'lavender'].includes(selectedTheme);
-        if(isCustomTheme) {
-            document.documentElement.setAttribute('data-theme', selectedTheme);
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-        }
+      document.documentElement.classList.add('dark')
     }
   }
 
