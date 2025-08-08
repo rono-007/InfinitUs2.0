@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import type { Message } from "@/lib/types"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,13 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, onReply }: ChatMessageProps) {
   const { toast } = useToast()
+  const [formattedTimestamp, setFormattedTimestamp] = React.useState("")
+
+  React.useEffect(() => {
+    if (message.timestamp) {
+      setFormattedTimestamp(new Date(message.timestamp).toLocaleTimeString())
+    }
+  }, [message.timestamp])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.text)
@@ -71,7 +79,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
           </div>}
         </div>
         <div className="text-xs text-muted-foreground">
-          {new Date(message.timestamp).toLocaleTimeString()}
+          {formattedTimestamp}
         </div>
       </div>
       {!isAssistant && (
