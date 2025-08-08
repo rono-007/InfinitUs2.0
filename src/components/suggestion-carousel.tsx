@@ -6,8 +6,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
 import { getSuggestions } from "@/ai/flows/suggestion-carousel"
 import type { SuggestionOutput } from "@/lib/ai-types"
@@ -74,8 +72,6 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
                 </CarouselItem>
               ))}
         </CarouselContent>
-        <CarouselPrevious className="ml-8" />
-        <CarouselNext className="mr-8" />
       </Carousel>
     </div>
   )
