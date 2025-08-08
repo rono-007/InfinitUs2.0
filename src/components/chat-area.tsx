@@ -141,7 +141,7 @@ export function ChatArea() {
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="text-center">
-                <div className="inline-block p-4 rounded-full bg-[linear-gradient(90deg,hsl(var(--chart-1)),hsl(var(--chart-2)),hsl(var(--chart-3)),hsl(var(--chart-4)),hsl(var(--chart-5)),hsl(var(--chart-1)))] bg-[length:200%_200%] animate-rainbow-glow">
+                <div className="inline-block p-4 rounded-full shadow-2xl shadow-white/50">
                     <Infinity size={40} className="text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold text-center font-headline mt-4">InfinitUs 2.0</h2>

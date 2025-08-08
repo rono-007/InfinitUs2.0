@@ -1,4 +1,5 @@
 import type {Config} from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 export default {
   darkMode: ['class'],
@@ -117,5 +118,19 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    plugin(function({matchUtilities, theme}) {
+        matchUtilities(
+            {
+                'shadow': (value) => ({
+                    boxShadow: `0 0 15px 5px ${value}`
+                })
+            },
+            {
+                values: theme('colors')
+            }
+        )
+    })
+    ],
 } satisfies Config;
