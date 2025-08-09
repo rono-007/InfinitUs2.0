@@ -52,11 +52,11 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         }
         const { text } = await response.json();
         setDocumentText(text);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
         toast({
           title: "Error Parsing Document",
-          description: "There was an error parsing your document. Please try again.",
+          description: error.message || "There was an error parsing your document. Please try again.",
           variant: "destructive",
         })
       } finally {
