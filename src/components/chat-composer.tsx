@@ -12,10 +12,10 @@ import { useChat } from "@/hooks/use-chat"
 import { aiExplain } from "@/ai/flows/ai-explain"
 import { useToast } from "@/hooks/use-toast"
 import { ThemeSwitcher } from "./theme-switcher"
-import {getDocument, GlobalWorkerOptions} from "pdfjs-dist";
+import * as pdfjs from "pdfjs-dist";
 import mammoth from "mammoth/mammoth.browser";
 
-GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 
 interface ChatComposerProps {
@@ -46,7 +46,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           }
 
           if (file.type === 'application/pdf') {
-            const pdf = await getDocument({ data: arrayBuffer }).promise;
+            const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
             let textContent = '';
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
