@@ -4,7 +4,7 @@ import * as React from "react"
 import type { Message } from "@/lib/types"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Bot, Copy, CornerUpLeft, User, Paperclip } from "lucide-react"
+import { Infinity, Copy, CornerUpLeft, User, Paperclip } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "./ui/card"
@@ -84,15 +84,17 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     <div className={cn("flex items-start gap-4", !isAssistant && "justify-end")}>
       {isAssistant && (
         <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback>{isThinking ? 
-            <div className="flex items-center justify-center p-2">
-                <div className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot"></span>
+            {isThinking ? (
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+                    <div className="flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 animate-bounce-dot"></span>
+                    </div>
                 </div>
-            </div>
-            : <Bot size={20} />}</AvatarFallback>
+            ) : (
+                <AvatarFallback><Infinity size={20} /></AvatarFallback>
+            )}
         </Avatar>
       )}
       <div className={cn("flex flex-col gap-1 w-auto max-w-[80%]", !isAssistant && "items-end")}>
