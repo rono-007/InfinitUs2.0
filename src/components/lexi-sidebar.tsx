@@ -28,11 +28,10 @@ export function LexiSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2">
-          <div className="bg-card text-primary p-2 rounded-lg border">
-            <Infinity className="h-5 w-5" />
+        <div className="flex items-center justify-center gap-2">
+          <div className="bg-white p-2 rounded-lg border">
+            <Infinity className="h-5 w-5 text-primary" />
           </div>
-          <h1 className="text-xl font-semibold font-headline">InfinitUs 2.0</h1>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-0">
