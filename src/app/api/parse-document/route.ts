@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseDocumentFlow } from '@/ai/flows/document-parser';
-import * as fs from 'fs/promises';
-import * as os from 'os';
-import * as path from 'path';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,14 +10,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    // Write file to a temporary location
-    const tempDir = os.tmpdir();
-    const tempFilePath = path.join(tempDir, file.name);
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(tempFilePath, fileBuffer);
+    const fileContentBase64 = fileBuffer.toString('base64');
     
     const result = await parseDocumentFlow({
-      filePath: tempFilePath,
+      fileContentBase64,
       mimeType: file.type,
     });
 

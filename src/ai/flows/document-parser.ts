@@ -7,12 +7,11 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import * as fs from 'fs/promises';
 import pdf from 'pdf-parse';
 import mammoth from 'mammoth';
 
 const DocumentInputSchema = z.object({
-  filePath: z.string().describe('The path to the uploaded file.'),
+  fileContentBase64: z.string().describe('The Base64 encoded content of the file.'),
   mimeType: z.string().describe('The MIME type of the file.'),
 });
 
@@ -26,30 +25,25 @@ export const parseDocumentFlow = ai.defineFlow(
     inputSchema: DocumentInputSchema,
     outputSchema: DocumentOutputSchema,
   },
-  async ({ filePath, mimeType }) => {
-    try {
-      const fileBuffer = await fs.readFile(filePath);
+  async ({ fileContentBase64, mimeType }) => {
+    const fileBuffer = Buffer.from(fileContentBase64, 'base64');
 
-      let text = '';
-      if (mimeType === 'application/pdf') {
-        const data = await pdf(fileBuffer);
-        text = data.text;
-      } else if (
-        mimeType ===
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ) {
-        const result = await mammoth.extractRawText({ buffer: fileBuffer });
-        text = result.value;
-      } else if (mimeType === 'text/plain') {
-        text = fileBuffer.toString('utf-8');
-      } else {
-        throw new Error(`Unsupported file type: ${mimeType}`);
-      }
-
-      return { text };
-    } finally {
-      // Clean up the temporary file
-      await fs.unlink(filePath);
+    let text = '';
+    if (mimeType === 'application/pdf') {
+      const data = await pdf(fileBuffer);
+      text = data.text;
+    } else if (
+      mimeType ===
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ) {
+      const result = await mammoth.extractRawText({ buffer: fileBuffer });
+      text = result.value;
+    } else if (mimeType.startsWith('text/')) {
+      text = fileBuffer.toString('utf-8');
+    } else {
+      throw new Error(`Unsupported file type: ${mimeType}`);
     }
+
+    return { text };
   }
 );
