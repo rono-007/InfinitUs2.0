@@ -12,6 +12,12 @@ import { useChat } from "@/hooks/use-chat"
 import { aiExplain } from "@/ai/flows/ai-explain"
 import { useToast } from "@/hooks/use-toast"
 import { ThemeSwitcher } from "./theme-switcher"
+import pdfjs from "pdfjs-dist/build/pdf";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+import mammoth from "mammoth/mammoth.browser";
+
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
 
 interface ChatComposerProps {
   onSendMessage: (message: string, model?: string, attachments?: Attachment[], documentText?: string) => void
@@ -30,6 +36,43 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const { activeChat, addMessage, setIsThinking } = useChat()
   const { toast } = useToast()
 
+  const parseDocument = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const arrayBuffer = event.target?.result as ArrayBuffer;
+          if (!arrayBuffer) {
+            return reject(new Error("File could not be read."));
+          }
+
+          if (file.type === 'application/pdf') {
+            const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+            let textContent = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const text = await page.getTextContent();
+              textContent += text.items.map(item => (item as any).str).join(' ');
+            }
+            resolve(textContent);
+          } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            resolve(result.value);
+          } else if (file.type.startsWith('text/')) {
+            resolve(new TextDecoder().decode(arrayBuffer));
+          } else {
+            reject(new Error(`Unsupported file type: ${file.type}`));
+          }
+        } catch (error) {
+          console.error("Error parsing document:", error);
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error("Failed to read file."));
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
   const handleAddRawFiles = async (files: File[]) => {
     const documentFiles = files.filter(file => !file.type.startsWith('image/'));
     
@@ -37,20 +80,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       setIsParsing(true);
       // We only support one document at a time for parsing for now.
       const documentFile = documentFiles[0];
-      const formData = new FormData();
-      formData.append('file', documentFile);
-
+      
       try {
-        const response = await fetch('/api/parse-document', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-           const errorData = await response.json();
-          throw new Error(errorData.details || 'Failed to parse document');
-        }
-        const { text } = await response.json();
+        const text = await parseDocument(documentFile);
         setDocumentText(text);
       } catch (error: any) {
         console.error(error);
