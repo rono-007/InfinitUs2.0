@@ -33,13 +33,12 @@ export function ChatArea() {
   const isMobile = useIsMobile()
 
   const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[]) => {
-    let currentChat = activeChat;
-    if (!currentChat) {
-      // If in privacy mode, we don't create a new chat that gets saved.
-      // addMessage will handle creating a temporary one.
-      if (!isPrivacyMode) {
-        currentChat = createNewChat();
-      }
+    let currentChatId = activeChat?.id;
+
+    // If there's no active chat, create one.
+    if (!currentChatId && !isPrivacyMode) {
+      const newChat = createNewChat();
+      currentChatId = newChat.id;
     }
 
     const newMessage: Message = {
@@ -52,14 +51,14 @@ export function ChatArea() {
     }
     
     // Pass the current chat's ID, or null if it's a new private chat
-    addMessage(currentChat?.id ?? null, newMessage);
+    addMessage(currentChatId ?? null, newMessage);
     
     setIsReplying(null)
     setIsThinking(true)
 
     try {
       // Use the messages from the active chat (which might be temporary) for history
-      const history = activeChat?.messages.slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role })) || [];
+      const history = (activeChat?.messages || []).slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role }));
       const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }], model: model || selectedModel } as ChatInput);
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -67,7 +66,7 @@ export function ChatArea() {
         text: result.message,
         timestamp: Date.now(),
       }
-      addMessage(activeChat?.id ?? null, assistantMessage)
+      addMessage(currentChatId ?? null, assistantMessage)
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({
@@ -142,7 +141,7 @@ export function ChatArea() {
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="relative flex items-center justify-center w-20 h-20">
-                <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse-glow"></div>
+                <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse"></div>
                 <Infinity size={40} className="text-primary z-10" />
             </div>
             <div className="text-center">

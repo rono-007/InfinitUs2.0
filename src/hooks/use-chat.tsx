@@ -68,10 +68,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         return;
     }
 
-    // This block handles non-privacy mode
-    if (!chatId) { // This case happens when sending first message in a new, non-private chat
-        const newChat = createNewChat();
-        chatId = newChat.id;
+    if (!chatId) {
+        console.error("addMessage called with null chatId in non-privacy mode.");
+        return;
     }
 
     setChatSessions(prevSessions =>
@@ -79,8 +78,15 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         if (session.id === chatId) {
           const newMessages = [...session.messages, message];
           let newTitle = session.title;
-          if (newMessages.length === 2 && newTitle === 'New Chat') {
-             newTitle = newMessages[0].text.substring(0, 30) + "...";
+          // Update title to first user message if it's still "New Chat"
+          if (session.title === 'New Chat' && message.role === 'user' && message.text) {
+             const userMessage = newMessages.find(m => m.role === 'user');
+             if (userMessage && userMessage.text) {
+                newTitle = userMessage.text.substring(0, 30);
+                if (userMessage.text.length > 30) {
+                    newTitle += "...";
+                }
+             }
           }
           return { ...session, messages: newMessages, title: newTitle };
         }
