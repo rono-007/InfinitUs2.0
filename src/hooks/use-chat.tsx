@@ -67,15 +67,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (!chatId) {
-        const newChat: ChatSession = {
-          id: `chat_${Date.now()}`,
-          title: message.text.substring(0, 30) + (message.text.length > 30 ? "..." : ""),
-          messages: [message],
-          timestamp: Date.now()
-        };
-        setChatSessions(prev => [newChat, ...prev]);
-        setActiveChatId(newChat.id);
-        return;
+      const newChatId = `chat_${Date.now()}`;
+      const newChat: ChatSession = {
+        id: newChatId,
+        title: message.text.substring(0, 30) + (message.text.length > 30 ? "..." : ""),
+        messages: [message],
+        timestamp: Date.now()
+      };
+      setChatSessions(prev => [newChat, ...prev]);
+      setActiveChatId(newChatId);
+      return;
     }
 
     setChatSessions(prevSessions =>

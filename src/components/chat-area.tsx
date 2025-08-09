@@ -71,7 +71,7 @@ export function ChatArea() {
         text: result.message,
         timestamp: Date.now(),
       }
-      addMessage(currentChatId, assistantMessage)
+      addMessage(activeChat?.id, assistantMessage)
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({
