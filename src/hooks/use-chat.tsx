@@ -9,7 +9,7 @@ interface ChatContextType {
   isThinking: boolean;
   isPrivacyMode: boolean;
   setActiveChat: (chatId: string) => void;
-  addMessage: (chatId: string | null, message: Message) => void;
+  addMessage: (chatId: string | null, message: Message) => string | undefined;
   createNewChat: () => void;
   setIsThinking: (isThinking: boolean) => void;
   setIsPrivacyMode: (isPrivacy: boolean) => void;
@@ -76,7 +76,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       };
       setChatSessions(prev => [newChat, ...prev]);
       setActiveChatId(newChatId);
-      return;
+      return newChatId;
     }
 
     setChatSessions(prevSessions =>

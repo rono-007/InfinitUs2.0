@@ -33,7 +33,7 @@ export function ChatArea() {
   const isMobile = useIsMobile()
 
   const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[], documentText?: string) => {
-    const currentChatId = activeChat?.id;
+    let chatId = activeChat?.id;
     
     const newMessage: Message = {
       id: String(Date.now()),
@@ -44,7 +44,10 @@ export function ChatArea() {
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
     
-    addMessage(currentChatId, newMessage);
+    const newChatId = addMessage(chatId, newMessage);
+    if (!chatId && newChatId) {
+      chatId = newChatId;
+    }
     
     setIsReplying(null)
     setIsThinking(true)
@@ -71,7 +74,7 @@ export function ChatArea() {
         text: result.message,
         timestamp: Date.now(),
       }
-      addMessage(activeChat?.id, assistantMessage)
+      addMessage(chatId, assistantMessage)
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({
