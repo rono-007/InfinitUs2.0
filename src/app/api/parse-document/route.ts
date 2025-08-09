@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { IncomingForm } from 'formidable';
 import { parseDocumentFlow } from '@/ai/flows/document-parser';
+import * as fs from 'fs';
 
 export const config = {
   api: {
@@ -10,6 +11,9 @@ export const config = {
 
 export async function POST(req: NextRequest) {
   try {
+    const arrayBuffer = await req.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
     const formData = await new Promise<any>((resolve, reject) => {
       const form = new IncomingForm();
       form.parse(req as any, (err, fields, files) => {
