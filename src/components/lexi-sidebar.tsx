@@ -29,9 +29,7 @@ export function LexiSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center justify-center gap-2">
-          <div className="bg-white p-2 rounded-lg border">
-            <Infinity className="h-5 w-5 text-primary" />
-          </div>
+          <Infinity className="h-6 w-6 text-primary" />
         </div>
       </SidebarHeader>
       <SidebarContent className="p-0">
