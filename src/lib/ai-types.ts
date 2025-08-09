@@ -35,6 +35,7 @@ export const ChatInputSchema = z.object({
     .describe('The chat history.'),
   message: z.string().describe('The user message.'),
   model: z.string().optional().describe('The model to use for the response.'),
+  imageUrl: z.string().optional().describe("An image to be included in the prompt, as a data URI."),
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 

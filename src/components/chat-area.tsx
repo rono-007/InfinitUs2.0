@@ -59,7 +59,17 @@ export function ChatArea() {
     try {
       // Use the messages from the active chat (which might be temporary) for history
       const history = (activeChat?.messages || []).slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role }));
-      const result = await chat({ message: text, history: [...history, { role: 'user', text, isUser: true }], model: model || selectedModel } as ChatInput);
+      
+      const imageAttachment = attachments?.find(att => att.type === 'image' && att.url);
+      const imageUrl = imageAttachment?.url;
+
+      const result = await chat({ 
+        message: text, 
+        history: [...history, { role: 'user', text, isUser: true }], 
+        model: model || selectedModel,
+        ...(imageUrl && {imageUrl})
+      } as ChatInput);
+
       const assistantMessage: Message = {
         id: String(Date.now()),
         role: 'assistant',

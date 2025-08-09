@@ -29,17 +29,30 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const { toast } = useToast()
 
   const handleAddAttachments = (files: File[]) => {
-    const newAttachments: Attachment[] = files.map(file => ({
-        id: `${file.name}-${file.lastModified}`,
-        name: file.name,
-        size: file.size,
-        type: file.type.startsWith('image/') ? 'image' : 
-              file.type === 'application/pdf' ? 'pdf' :
-              file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 'docx' : 'txt',
-        // In a real app, you'd handle file uploads and get a URL
-        url: URL.createObjectURL(file) 
-    }));
-    setAttachments(prev => [...prev, ...newAttachments]);
+    const newAttachmentsPromises = files.map(file => {
+      return new Promise<Attachment>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const url = e.target?.result as string;
+          const attachment: Attachment = {
+            id: `${file.name}-${file.lastModified}`,
+            name: file.name,
+            size: file.size,
+            type: file.type.startsWith('image/') ? 'image' : 
+                  file.type === 'application/pdf' ? 'pdf' :
+                  file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 'docx' : 'txt',
+            url: url,
+          };
+          resolve(attachment);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(newAttachmentsPromises).then(newAttachments => {
+        setAttachments(prev => [...prev, ...newAttachments]);
+    })
   }
 
   const removeAttachment = (id: string) => {

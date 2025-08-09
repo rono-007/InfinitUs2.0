@@ -21,6 +21,11 @@ const chatPrompt = ai.definePrompt({
 
 Continue the following conversation.
 
+{{#if imageUrl}}
+  The user has provided an image.
+  Image: {{media url=imageUrl}}
+{{/if}}
+
 {{#each history}}
   {{#if this.isUser}}
     User: {{{this.text}}}
