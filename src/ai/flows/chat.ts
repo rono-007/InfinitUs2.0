@@ -22,8 +22,16 @@ const chatPrompt = ai.definePrompt({
 Continue the following conversation.
 
 {{#if imageUrl}}
-  The user has provided an image.
+  The user has provided an image. Analyze it and answer any questions about it.
   Image: {{media url=imageUrl}}
+{{/if}}
+
+{{#if documentText}}
+  The user has provided a document with the following content. Use this as context to answer their questions.
+  Document Content:
+  ---
+  {{{documentText}}}
+  ---
 {{/if}}
 
 {{#each history}}

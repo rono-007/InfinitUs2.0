@@ -4,6 +4,7 @@ export type Attachment = {
   name: string;
   size: number;
   url?: string;
+  rawFile?: File;
 };
 
 export type Message = {

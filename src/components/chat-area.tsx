@@ -32,15 +32,14 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[]) => {
+  const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[], documentText?: string) => {
     let currentChatId = activeChat?.id;
 
-    // If there's no active chat, create one.
+    // If there's no active chat and not in privacy mode, create one.
     if (!currentChatId && !isPrivacyMode) {
-      const newChat = createNewChat();
-      currentChatId = newChat.id;
+        currentChatId = createNewChat();
     }
-
+    
     const newMessage: Message = {
       id: String(Date.now()),
       role: 'user',
@@ -51,7 +50,7 @@ export function ChatArea() {
     }
     
     // Pass the current chat's ID, or null if it's a new private chat
-    addMessage(currentChatId ?? null, newMessage);
+    addMessage(currentChatId, newMessage);
     
     setIsReplying(null)
     setIsThinking(true)
@@ -67,7 +66,8 @@ export function ChatArea() {
         message: text, 
         history: [...history, { role: 'user', text, isUser: true }], 
         model: model || selectedModel,
-        ...(imageUrl && {imageUrl})
+        ...(imageUrl && {imageUrl}),
+        ...(documentText && {documentText}),
       } as ChatInput);
 
       const assistantMessage: Message = {
@@ -76,7 +76,7 @@ export function ChatArea() {
         text: result.message,
         timestamp: Date.now(),
       }
-      addMessage(currentChatId ?? null, assistantMessage)
+      addMessage(currentChatId, assistantMessage)
     } catch (error) {
       console.error("Failed to get AI response:", error)
       toast({
@@ -151,7 +151,7 @@ export function ChatArea() {
       ) : (
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="relative flex items-center justify-center w-20 h-20">
-                <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse"></div>
+                <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse-glow"></div>
                 <Infinity size={40} className="text-primary z-10" />
             </div>
             <div className="text-center">
