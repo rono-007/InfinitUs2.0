@@ -31,15 +31,15 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const { toast } = useToast()
 
   const handleAddRawFiles = async (files: File[]) => {
-    const documentFiles = files.filter(file => file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif');
-    const imageFiles = files.filter(file => file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif');
-
+    const documentFiles = files.filter(file => !file.type.startsWith('image/'));
+    
     if (documentFiles.length > 0) {
       setIsParsing(true);
+      // We only support one document at a time for parsing for now.
+      const documentFile = documentFiles[0];
       const formData = new FormData();
-      documentFiles.forEach(file => {
-        formData.append('file', file);
-      });
+      formData.append('file', documentFile);
+
       try {
         const response = await fetch('/api/parse-document', {
           method: 'POST',
@@ -47,7 +47,8 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         });
 
         if (!response.ok) {
-          throw new Error('Failed to parse document');
+           const errorData = await response.json();
+          throw new Error(errorData.details || 'Failed to parse document');
         }
         const { text } = await response.json();
         setDocumentText(text);

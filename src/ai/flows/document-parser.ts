@@ -27,24 +27,29 @@ export const parseDocumentFlow = ai.defineFlow(
     outputSchema: DocumentOutputSchema,
   },
   async ({ filePath, mimeType }) => {
-    const fileBuffer = await fs.readFile(filePath);
+    try {
+      const fileBuffer = await fs.readFile(filePath);
 
-    let text = '';
-    if (mimeType === 'application/pdf') {
-      const data = await pdf(fileBuffer);
-      text = data.text;
-    } else if (
-      mimeType ===
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ) {
-      const result = await mammoth.extractRawText({ buffer: fileBuffer });
-      text = result.value;
-    } else if (mimeType === 'text/plain') {
-      text = fileBuffer.toString('utf-8');
-    } else {
-      throw new Error(`Unsupported file type: ${mimeType}`);
+      let text = '';
+      if (mimeType === 'application/pdf') {
+        const data = await pdf(fileBuffer);
+        text = data.text;
+      } else if (
+        mimeType ===
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ) {
+        const result = await mammoth.extractRawText({ buffer: fileBuffer });
+        text = result.value;
+      } else if (mimeType === 'text/plain') {
+        text = fileBuffer.toString('utf-8');
+      } else {
+        throw new Error(`Unsupported file type: ${mimeType}`);
+      }
+
+      return { text };
+    } finally {
+      // Clean up the temporary file
+      await fs.unlink(filePath);
     }
-
-    return { text };
   }
 );

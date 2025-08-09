@@ -1,38 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { IncomingForm } from 'formidable';
 import { parseDocumentFlow } from '@/ai/flows/document-parser';
-import * as fs from 'fs';
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+import * as fs from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
 
 export async function POST(req: NextRequest) {
   try {
-    const arrayBuffer = await req.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    const formData = await new Promise<any>((resolve, reject) => {
-      const form = new IncomingForm();
-      form.parse(req as any, (err, fields, files) => {
-        if (err) return reject(err);
-        resolve({ fields, files });
-      });
-    });
-
-    const file = formData.files.file[0];
+    const formData = await req.formData();
+    const file = formData.get('file') as File | null;
 
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    const result = await parseDocumentFlow({
-      filePath: file.filepath,
-      mimeType: file.mimetype,
-    });
+    // Write file to a temporary location
+    const tempDir = os.tmpdir();
+    const tempFilePath = path.join(tempDir, file.name);
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    await fs.writeFile(tempFilePath, fileBuffer);
     
+    const result = await parseDocumentFlow({
+      filePath: tempFilePath,
+      mimeType: file.type,
+    });
+
     return NextResponse.json({ text: result.text });
   } catch (error: any) {
     console.error('Error parsing document:', error);
