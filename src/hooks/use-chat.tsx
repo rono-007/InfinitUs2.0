@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import type { Message, ChatSession } from '@/lib/types';
 
 interface ChatContextType {
@@ -10,7 +10,7 @@ interface ChatContextType {
   isPrivacyMode: boolean;
   setActiveChat: (chatId: string) => void;
   addMessage: (chatId: string | null, message: Message) => void;
-  createNewChat: () => ChatSession;
+  createNewChat: () => void;
   setIsThinking: (isThinking: boolean) => void;
   setIsPrivacyMode: (isPrivacy: boolean) => void;
   deleteChat: (chatId: string) => void;
@@ -28,9 +28,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   const activeChat = isPrivacyMode && temporaryChat ? temporaryChat : chatSessions.find(chat => chat.id === activeChatId) || null;
 
-  const createNewChat = () => {
-    setIsPrivacyMode(false); // Creating a new chat turns off privacy mode
-    setTemporaryChat(null); // Clear any temp chat
+  const createNewChat = useCallback(() => {
+    setIsPrivacyMode(false);
+    setTemporaryChat(null);
     const newChat: ChatSession = {
       id: `chat_${Date.now()}`,
       title: 'New Chat',
@@ -39,23 +39,21 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     };
     setChatSessions(prev => [newChat, ...prev]);
     setActiveChatId(newChat.id);
-    return newChat;
-  };
+  }, []);
 
   const setActiveChat = (chatId: string) => {
-    setIsPrivacyMode(false); // Switching chats turns off privacy mode
-    setTemporaryChat(null); // Clear any temp chat
+    setIsPrivacyMode(false);
+    setTemporaryChat(null);
     setActiveChatId(chatId);
   };
 
-  const addMessage = (chatId: string | null, message: Message) => {
+  const addMessage = useCallback((chatId: string | null, message: Message) => {
     if (isPrivacyMode) {
         setTemporaryChat(prevChat => {
             const currentMessages = prevChat?.messages || [];
             const newMessages = [...currentMessages, message];
             if (!prevChat) {
-                // This is the first message of a new private chat
-                setActiveChatId(null); // Ensure no "real" chat is active
+                setActiveChatId(null);
                 return {
                     id: `temp_${Date.now()}`,
                     title: 'Private Chat',
@@ -69,7 +67,14 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (!chatId) {
-        console.error("addMessage called with null chatId in non-privacy mode.");
+        const newChat: ChatSession = {
+          id: `chat_${Date.now()}`,
+          title: message.text.substring(0, 30) + (message.text.length > 30 ? "..." : ""),
+          messages: [message],
+          timestamp: Date.now()
+        };
+        setChatSessions(prev => [newChat, ...prev]);
+        setActiveChatId(newChat.id);
         return;
     }
 
@@ -78,7 +83,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         if (session.id === chatId) {
           const newMessages = [...session.messages, message];
           let newTitle = session.title;
-          // Update title to first user message if it's still "New Chat"
           if (session.title === 'New Chat' && message.role === 'user' && message.text) {
              const userMessage = newMessages.find(m => m.role === 'user');
              if (userMessage && userMessage.text) {
@@ -93,7 +97,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         return session;
       })
     );
-  };
+  }, [isPrivacyMode]);
 
   const deleteChat = (chatId: string) => {
     setChatSessions(prevSessions => {
@@ -107,7 +111,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   const handleSetIsPrivacyMode = (isPrivate: boolean) => {
     if (isPrivate) {
-        // When entering privacy mode, create a new temporary chat
         setTemporaryChat({
             id: `temp_${Date.now()}`,
             title: 'Private Chat',
@@ -115,7 +118,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             timestamp: Date.now()
         })
     } else {
-        // When leaving privacy mode, clear the temporary chat
         setTemporaryChat(null);
     }
     setIsPrivacyMode(isPrivate);

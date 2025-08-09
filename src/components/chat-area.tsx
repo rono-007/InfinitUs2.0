@@ -25,7 +25,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip"
 
 export function ChatArea() {
-  const { activeChat, addMessage, createNewChat, isThinking, setIsThinking, isPrivacyMode, setIsPrivacyMode } = useChat();
+  const { activeChat, addMessage, isThinking, setIsThinking, isPrivacyMode, setIsPrivacyMode } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const [selectedModel, setSelectedModel] = React.useState("googleai/gemini-2.0-flash")
   const viewportRef = React.useRef<HTMLDivElement>(null)
@@ -33,12 +33,7 @@ export function ChatArea() {
   const isMobile = useIsMobile()
 
   const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[], documentText?: string) => {
-    let currentChatId = activeChat?.id;
-
-    // If there's no active chat and not in privacy mode, create one.
-    if (!currentChatId && !isPrivacyMode) {
-        currentChatId = createNewChat();
-    }
+    const currentChatId = activeChat?.id;
     
     const newMessage: Message = {
       id: String(Date.now()),
@@ -49,22 +44,22 @@ export function ChatArea() {
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
     
-    // Pass the current chat's ID, or null if it's a new private chat
     addMessage(currentChatId, newMessage);
     
     setIsReplying(null)
     setIsThinking(true)
 
     try {
-      // Use the messages from the active chat (which might be temporary) for history
-      const history = (activeChat?.messages || []).slice(-10).map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role }));
+      const chatHistory = (isPrivacyMode ? activeChat?.messages ?? [] : (activeChat?.messages || [])).slice(-10);
+
+      const history = chatHistory.map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role as 'user' | 'assistant' }));
       
       const imageAttachment = attachments?.find(att => att.type === 'image' && att.url);
       const imageUrl = imageAttachment?.url;
 
       const result = await chat({ 
         message: text, 
-        history: [...history, { role: 'user', text, isUser: true }], 
+        history, 
         model: model || selectedModel,
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
