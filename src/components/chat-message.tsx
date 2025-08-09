@@ -84,7 +84,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
     <div className={cn("flex items-start gap-4", !isAssistant && "justify-end")}>
       {isAssistant && (
         <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback><Infinity size={20} /></AvatarFallback>
+            <AvatarFallback><Infinity size={20} /></AvatarFallback>
         </Avatar>
       )}
       <div className={cn("flex flex-col gap-1 w-auto max-w-[80%]", !isAssistant && "items-end")}>
@@ -119,9 +119,9 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
             {isThinking ? (
               <div className="flex items-center justify-center p-2">
                 <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
-                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
-                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-bounce-dot"></span>
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-typing-dot"></span>
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-typing-dot [animation-delay:0.2s]"></span>
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/70 animate-typing-dot [animation-delay:0.4s]"></span>
                 </div>
               </div>
             ) : (

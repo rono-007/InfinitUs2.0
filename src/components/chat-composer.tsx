@@ -151,9 +151,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => handleSend()} disabled={isThinking || (!message.trim() && attachments.length === 0)}>
           {isThinking ? (
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot [animation-delay:-0.3s]"></span>
-              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot [animation-delay:-0.15s]"></span>
-              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-bounce-dot"></span>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-typing-dot"></span>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-typing-dot [animation-delay:0.2s]"></span>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/70 animate-typing-dot [animation-delay:0.4s]"></span>
             </div>
           ) : <Send />}
         </Button>
