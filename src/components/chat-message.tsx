@@ -4,7 +4,7 @@ import * as React from "react"
 import type { Message } from "@/lib/types"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Bot, Copy, CornerUpLeft, User } from "lucide-react"
+import { Bot, Copy, CornerUpLeft, User, Paperclip } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "./ui/card"
@@ -12,6 +12,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Image from "next/image"
 
 
 interface ChatMessageProps {
@@ -103,10 +104,25 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
               </CardContent>
             </Card>
           )}
+          {message.attachments && message.attachments.length > 0 && (
+            <div className="mb-2 grid grid-cols-2 gap-2">
+              {message.attachments.map(att => (
+                att.type === 'image' && att.url ? (
+                  <Image key={att.id} src={att.url} alt={att.name} width={150} height={150} className="rounded-md object-cover" />
+                ) : (
+                  <div key={att.id} className="flex items-center gap-2 p-2 rounded-md bg-muted text-sm">
+                    <Paperclip size={16} />
+                    <span>{att.name}</span>
+                  </div>
+                )
+              ))}
+            </div>
+          )}
           <div className={cn(
             "p-4 rounded-lg",
             isAssistant ? "bg-card rounded-tl-none" : "bg-primary text-primary-foreground rounded-br-none",
-            isThinking && "p-2"
+            isThinking && "p-2",
+            !message.text && "p-0"
           )}>
             {isThinking ? (
               <div className="flex items-center justify-center p-2">
@@ -117,7 +133,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
                 </div>
               </div>
             ) : (
-            <div className="prose prose-sm dark:prose-invert max-w-none prose-p:m-0 prose-headings:m-0 prose-ul:m-0 prose-ol:m-0 prose-li:my-1 prose-a:text-primary hover:prose-a:underline">
+            message.text && <div className="prose prose-sm dark:prose-invert max-w-none prose-p:m-0 prose-headings:m-0 prose-ul:m-0 prose-ol:m-0 prose-li:my-1 prose-a:text-primary hover:prose-a:underline">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{

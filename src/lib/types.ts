@@ -3,6 +3,7 @@ export type Attachment = {
   type: 'pdf' | 'image' | 'docx' | 'txt';
   name: string;
   size: number;
+  url?: string;
 };
 
 export type Message = {

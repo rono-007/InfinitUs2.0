@@ -14,7 +14,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { ChatMessage } from "./chat-message"
 import { SuggestionCarousel } from "./suggestion-carousel"
 import { ChatComposer } from "./chat-composer"
-import type { Message } from "@/lib/types"
+import type { Message, Attachment } from "@/lib/types"
 import { chat } from "@/ai/flows/chat"
 import { useToast } from "@/hooks/use-toast"
 import type { ChatInput } from "@/lib/ai-types"
@@ -32,7 +32,7 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string, model?: string) => {
+  const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[]) => {
     let currentChat = activeChat;
     if (!currentChat) {
       // If in privacy mode, we don't create a new chat that gets saved.
@@ -46,6 +46,7 @@ export function ChatArea() {
       id: String(Date.now()),
       role: 'user',
       text,
+      attachments,
       timestamp: Date.now(),
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
@@ -142,7 +143,7 @@ export function ChatArea() {
         <div className="flex-grow flex flex-col items-center justify-center p-4">
             <div className="relative flex items-center justify-center w-20 h-20">
                 <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse-glow"></div>
-                <Infinity size={40} className="text-primary z-10 mx-auto" />
+                <Infinity size={40} className="text-primary z-10" />
             </div>
             <div className="text-center">
                 <h2 className="text-2xl font-bold text-center font-headline mt-4">InfinitUs 2.0</h2>

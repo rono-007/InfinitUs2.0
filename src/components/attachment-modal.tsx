@@ -19,9 +19,10 @@ import type { Attachment } from "@/lib/types"
 interface AttachmentModalProps {
   isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
+  onAddAttachments: (attachments: File[]) => void
 }
 
-export function AttachmentModal({ isOpen, onOpenChange }: AttachmentModalProps) {
+export function AttachmentModal({ isOpen, onOpenChange, onAddAttachments }: AttachmentModalProps) {
   const [photos, setPhotos] = React.useState<File[]>([])
   const [files, setFiles] = React.useState<File[]>([])
   const [activeTab, setActiveTab] = React.useState("photos")
@@ -49,6 +50,16 @@ export function AttachmentModal({ isOpen, onOpenChange }: AttachmentModalProps) 
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  const handleAddAttachments = () => {
+    const allAttachments = [...photos, ...files];
+    if (allAttachments.length > 0) {
+      onAddAttachments(allAttachments);
+    }
+    setPhotos([]);
+    setFiles([]);
+    onOpenChange(false);
   }
 
   return (
@@ -152,7 +163,7 @@ export function AttachmentModal({ isOpen, onOpenChange }: AttachmentModalProps) 
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button>Add Attachments</Button>
+          <Button onClick={handleAddAttachments}>Add Attachments</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
