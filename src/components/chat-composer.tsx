@@ -147,18 +147,22 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   }
 
   const handleExplain = async () => {
-    if (!activeChat || activeChat.messages.length === 0 || isThinking) {
-        toast({
-            title: "Nothing to explain",
-            description: "There are no messages in the chat to explain.",
-        })
-      return
+    const textToExplain = message.trim();
+    const lastMessage = activeChat?.messages?.[activeChat.messages.length - 1];
+
+    if (!textToExplain && (!lastMessage || !lastMessage.text)) {
+      toast({
+        title: "Nothing to explain",
+        description: "Type a message or have a conversation to use Explain.",
+      });
+      return;
     }
 
-    setIsThinking(true)
+    if (isThinking) return;
+
+    setIsThinking(true);
     try {
-      const lastMessage = activeChat.messages[activeChat.messages.length - 1]
-      const result = await aiExplain({ text: lastMessage.text })
+      const result = await aiExplain({ text: textToExplain || lastMessage?.text });
       
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -166,7 +170,22 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         text: result.explanation,
         timestamp: Date.now(),
       }
-      addMessage(activeChat.id, assistantMessage)
+      
+      let chatId = activeChat?.id;
+      if (!chatId && textToExplain) {
+          const userMessage: Message = {
+              id: String(Date.now() + 1),
+              role: 'user',
+              text: textToExplain,
+              timestamp: Date.now() -1
+          }
+          chatId = addMessage(null, userMessage);
+          setMessage("");
+      }
+
+      if (chatId) {
+        addMessage(chatId, assistantMessage)
+      }
 
     } catch (error) {
       console.error("Failed to get explanation:", error)
