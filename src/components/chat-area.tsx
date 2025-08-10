@@ -17,12 +17,12 @@ import { chat } from "@/ai/flows/chat"
 import { useToast } from "@/hooks/use-toast"
 import type { ChatInput } from "@/lib/ai-types"
 import { useChat } from "@/hooks/use-chat"
-import { Infinity } from "lucide-react"
+import { BrainCircuit, Infinity } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function ChatArea() {
-  const { activeChat, addMessage, isThinking, setIsThinking } = useChat();
+  const { activeChat, addMessage, isThinking, setIsThinking, isThinkingLonger, setIsThinkingLonger } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const [selectedModel, setSelectedModel] = React.useState("googleai/gemini-2.0-flash")
   const viewportRef = React.useRef<HTMLDivElement>(null)
@@ -47,7 +47,9 @@ export function ChatArea() {
     }
     
     setIsReplying(null)
-    setIsThinking(true)
+    if (!thinkLonger) {
+      setIsThinking(true)
+    }
 
     try {
       const chatHistory = (activeChat?.messages || []).slice(-10);
@@ -82,6 +84,7 @@ export function ChatArea() {
       })
     } finally {
       setIsThinking(false)
+      setIsThinkingLonger(false)
     }
   }
 
@@ -93,7 +96,7 @@ export function ChatArea() {
     if (viewportRef.current) {
       viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
     }
-  }, [activeChat?.messages, isThinking])
+  }, [activeChat?.messages, isThinking, isThinkingLonger])
 
 
   return (
@@ -127,7 +130,15 @@ export function ChatArea() {
             {activeChat.messages.map((message) => (
               <ChatMessage key={message.id} message={message} onReply={handleReply} />
             ))}
-            {isThinking && <ChatMessage key="thinking" message={{id: "thinking", role: "assistant", text: "...", timestamp: Date.now()}} onReply={() => {}} />}
+            {isThinking && !isThinkingLonger && <ChatMessage key="thinking" message={{id: "thinking", role: "assistant", text: "...", timestamp: Date.now()}} onReply={() => {}} />}
+            {isThinkingLonger && (
+                <div className="flex justify-center items-center py-4">
+                    <div className="relative flex items-center justify-center w-20 h-20">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse-glow"></div>
+                        <BrainCircuit size={40} className="text-primary z-10 animate-pulse" />
+                    </div>
+                </div>
+            )}
           </div>
           <ScrollBar />
         </ScrollArea>
@@ -147,7 +158,7 @@ export function ChatArea() {
       <div className="p-4 bg-background">
         <div className="max-w-4xl mx-auto">
           {(!activeChat || activeChat.messages.length === 0) && !isMobile && <SuggestionCarousel onSuggestionClick={(suggestion) => handleSendMessage(suggestion)} />}
-          <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking} />
+          <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking || isThinkingLonger} />
         </div>
       </div>
     </div>

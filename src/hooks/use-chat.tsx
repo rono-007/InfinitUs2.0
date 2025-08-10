@@ -14,10 +14,12 @@ interface ChatContextType {
   chatSessions: ChatSession[];
   activeChat: ChatSession | null;
   isThinking: boolean;
+  isThinkingLonger: boolean;
   setActiveChat: (chatId: string) => void;
   addMessage: (chatId: string | null, message: Message) => string | undefined;
   createNewChat: () => void;
   setIsThinking: (isThinking: boolean) => void;
+  setIsThinkingLonger: (isThinkingLonger: boolean) => void;
   deleteChat: (chatId: string) => void;
   clearAllChats: () => void;
   getThinkLongerUsage: () => ThinkLongerUsage;
@@ -30,6 +32,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
+  const [isThinkingLonger, setIsThinkingLonger] = useState(false);
   const [thinkLongerUsage, setThinkLongerUsage] = useState<ThinkLongerUsage>({ count: 0, date: new Date().toISOString().split('T')[0] });
 
   useEffect(() => {
@@ -140,7 +143,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, setActiveChat, addMessage, createNewChat, setIsThinking, deleteChat, clearAllChats, getThinkLongerUsage, incrementThinkLongerUsage }}>
+    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, isThinkingLonger, setActiveChat, addMessage, createNewChat, setIsThinking, setIsThinkingLonger, deleteChat, clearAllChats, getThinkLongerUsage, incrementThinkLongerUsage }}>
       {children}
     </ChatContext.Provider>
   );

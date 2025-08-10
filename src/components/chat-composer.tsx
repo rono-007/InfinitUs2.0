@@ -32,7 +32,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const [isParsing, setIsParsing] = React.useState(false);
   const [isAttachmentModalOpen, setAttachmentModalOpen] = React.useState(false)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-  const { activeChat, addMessage, setIsThinking, getThinkLongerUsage, incrementThinkLongerUsage } = useChat()
+  const { activeChat, addMessage, setIsThinking, getThinkLongerUsage, incrementThinkLongerUsage, setIsThinkingLonger } = useChat()
   const { toast } = useToast()
 
   const parseDocument = async (file: File): Promise<string> => {
@@ -161,7 +161,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         return;
     }
     
-    setIsThinking(true);
+    setIsThinkingLonger(true);
     // Simulate thinking for 8 seconds
     await new Promise(resolve => setTimeout(resolve, 8000));
     
@@ -171,6 +171,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     setMessage("");
     setAttachments([]);
     setDocumentText(undefined);
+    setIsThinkingLonger(false);
   }
 
   const handleExplain = async () => {

@@ -4,7 +4,7 @@ import * as React from "react"
 import type { Message } from "@/lib/types"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Infinity, Copy, CornerUpLeft, User, Paperclip } from "lucide-react"
+import { BrainCircuit, Infinity, Copy, CornerUpLeft, User, Paperclip } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent } from "./ui/card"
@@ -40,6 +40,8 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
 
   const isAssistant = message.role === 'assistant'
   const isThinking = message.id === 'thinking'
+  const isThinkingLonger = message.id === 'thinking-longer'
+
 
   const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
     const match = /language-(\w+)/.exec(className || '');
@@ -113,7 +115,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
           <div className={cn(
             "p-4 rounded-lg",
             isAssistant ? "bg-card rounded-tl-none" : "bg-primary text-primary-foreground rounded-br-none",
-            isThinking && "p-2",
+            (isThinking || isThinkingLonger) && "p-2",
             !message.text && "p-0"
           )}>
             {isThinking ? (
