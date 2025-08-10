@@ -160,9 +160,23 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
 
     if (isThinking) return;
 
+    const explanationTarget = textToExplain || lastMessage?.text;
+    let chatId = activeChat?.id;
+
+    if (textToExplain) {
+      const userMessage: Message = {
+        id: String(Date.now() + 1),
+        role: 'user',
+        text: textToExplain,
+        timestamp: Date.now() - 1
+      };
+      chatId = addMessage(chatId, userMessage);
+      setMessage(""); // Clear the input field
+    }
+
     setIsThinking(true);
     try {
-      const result = await aiExplain({ text: textToExplain || lastMessage?.text });
+      const result = await aiExplain({ text: explanationTarget });
       
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -170,21 +184,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         text: result.explanation,
         timestamp: Date.now(),
       }
-      
-      let chatId = activeChat?.id;
-      if (!chatId && textToExplain) {
-          const userMessage: Message = {
-              id: String(Date.now() + 1),
-              role: 'user',
-              text: textToExplain,
-              timestamp: Date.now() -1
-          }
-          chatId = addMessage(null, userMessage);
-          setMessage("");
-      }
 
       if (chatId) {
-        addMessage(chatId, assistantMessage)
+        addMessage(chatId, assistantMessage);
       }
 
     } catch (error) {
@@ -198,6 +200,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       setIsThinking(false)
     }
   }
+
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
