@@ -49,7 +49,6 @@ Continue the following conversation.
 User: {{{message}}}
 InfinitUs 2.0:
 `,
-  config: {},
 });
 
 const chatFlow = ai.defineFlow(
@@ -61,7 +60,7 @@ const chatFlow = ai.defineFlow(
   async input => {
     const model = input.model || 'googleai/gemini-2.0-flash';
     const config = input.thinkLonger ? { maxOutputTokens: 2048 } : {};
-
+    
     const {output} = await chatPrompt(input, { model, config });
     return output!;
   }
