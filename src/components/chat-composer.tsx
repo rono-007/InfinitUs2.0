@@ -161,19 +161,19 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       return;
     }
     
-    // Immediately send the user's message
-    onSendMessage(message, "googleai/gemini-2.5-pro", attachments, documentText, true);
-    incrementThinkLongerUsage();
+    // Store values before clearing
+    const messageToSend = message;
+    const attachmentsToSend = attachments;
+    const documentTextToSend = documentText;
     
-    // Clear the input fields
+    // Clear the input fields immediately
     setMessage("");
     setAttachments([]);
     setDocumentText(undefined);
-  
-    // Set the thinking state after the message is sent
-    setIsThinkingLonger(true);
-    await new Promise(resolve => setTimeout(resolve, 8000));
-    setIsThinkingLonger(false);
+    
+    // Immediately send the user's message and then call the AI
+    onSendMessage(messageToSend, "googleai/gemini-2.5-pro", attachmentsToSend, documentTextToSend, true);
+    incrementThinkLongerUsage();
   }
 
   const handleExplain = async () => {
@@ -286,7 +286,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask me anything that's on your mind..."
-          className="pr-24 min-h-[52px] resize-none pt-3"
+          className="pr-24 min-h-[52px] resize-none"
           rows={1}
           disabled={isThinking || isParsing}
         />

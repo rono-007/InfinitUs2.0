@@ -47,10 +47,11 @@ export function ChatArea() {
     }
     
     setIsReplying(null)
+
     if (thinkLonger) {
       setIsThinkingLonger(true);
     } else {
-      setIsThinking(true)
+      setIsThinking(true);
     }
 
     try {
@@ -85,8 +86,11 @@ export function ChatArea() {
         variant: "destructive",
       })
     } finally {
-      setIsThinking(false)
-      setIsThinkingLonger(false)
+      if (thinkLonger) {
+        setIsThinkingLonger(false);
+      } else {
+        setIsThinking(false);
+      }
     }
   }
 
@@ -134,11 +138,12 @@ export function ChatArea() {
             ))}
             {isThinking && !isThinkingLonger && <ChatMessage key="thinking" message={{id: "thinking", role: "assistant", text: "...", timestamp: Date.now()}} onReply={() => {}} />}
             {isThinkingLonger && (
-                <div className="flex justify-center items-center py-4">
+                <div className="flex flex-col justify-center items-center py-4 gap-2">
                     <div className="relative flex items-center justify-center w-20 h-20">
                         <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse-glow"></div>
                         <BrainCircuit size={40} className="text-primary z-10 animate-pulse" />
                     </div>
+                    <p className="text-sm text-muted-foreground animate-pulse">thinking...</p>
                 </div>
             )}
           </div>
