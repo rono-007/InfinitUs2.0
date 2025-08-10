@@ -133,6 +133,8 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
                   components={{
                     code: CodeBlock,
                   }}
+                  unwrapDisallowed={false}
+                  disallowedElements={['p']}
                 >
                   {message.text}
                 </ReactMarkdown>

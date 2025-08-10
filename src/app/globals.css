@@ -214,4 +214,8 @@
   ol {
     @apply list-decimal;
   }
+
+  .prose-sm p {
+    @apply m-0;
+  }
 }
