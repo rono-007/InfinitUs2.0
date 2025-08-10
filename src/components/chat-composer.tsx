@@ -142,7 +142,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     }
   }
 
-  const handleThinkLonger = async () => {
+  const handleThinkLonger = () => {
     const usage = getThinkLongerUsage();
     if (usage.count >= 5) {
       toast({
@@ -161,18 +161,13 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       return;
     }
     
-    // Store values before clearing
-    const messageToSend = message;
-    const attachmentsToSend = attachments;
-    const documentTextToSend = documentText;
+    onSendMessage(message, "googleai/gemini-2.5-pro", attachments, documentText, true);
     
     // Clear the input fields immediately
     setMessage("");
     setAttachments([]);
     setDocumentText(undefined);
     
-    // Immediately send the user's message and then call the AI
-    onSendMessage(messageToSend, "googleai/gemini-2.5-pro", attachmentsToSend, documentTextToSend, true);
     incrementThinkLongerUsage();
   }
 

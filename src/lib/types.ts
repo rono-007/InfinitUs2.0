@@ -15,6 +15,7 @@ export type Message = {
   timestamp: number;
   tone?: string;
   inReplyTo?: string;
+  thinkLonger?: boolean;
   metadata?: {
     isReplying?: boolean;
     originalText?: string;

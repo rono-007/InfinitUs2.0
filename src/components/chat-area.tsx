@@ -38,6 +38,7 @@ export function ChatArea() {
       text,
       attachments,
       timestamp: Date.now(),
+      ...(thinkLonger && { thinkLonger: true }),
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
     

@@ -98,6 +98,12 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
               </CardContent>
             </Card>
           )}
+          {message.thinkLonger && (
+            <div className="mb-1 flex items-center justify-end gap-1 text-xs text-muted-foreground">
+              <BrainCircuit size={14} />
+              <span>Think Longer</span>
+            </div>
+          )}
           {message.attachments && message.attachments.length > 0 && (
             <div className="mb-2 grid grid-cols-2 gap-2">
               {message.attachments.map(att => (
