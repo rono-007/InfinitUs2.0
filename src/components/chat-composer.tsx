@@ -32,7 +32,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const [isParsing, setIsParsing] = React.useState(false);
   const [isAttachmentModalOpen, setAttachmentModalOpen] = React.useState(false)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-  const { activeChat, addMessage, setIsThinking, getThinkLongerUsage, incrementThinkLongerUsage, setIsThinkingLonger } = useChat()
+  const { activeChat, addMessage, setIsThinking, setIsThinkingLonger } = useChat()
   const { toast } = useToast()
 
   const parseDocument = async (file: File): Promise<string> => {
@@ -143,16 +143,6 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   }
 
   const handleThinkLonger = () => {
-    const usage = getThinkLongerUsage();
-    if (usage.count >= 5) {
-      toast({
-        title: "Think Longer Limit Reached",
-        description: "You have used your 5 'Think Longer' credits for today. Please try again tomorrow.",
-        variant: "destructive",
-      });
-      return;
-    }
-  
     if (!message.trim()) {
       toast({
         title: "Nothing to think about",
@@ -167,13 +157,17 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     setMessage("");
     setAttachments([]);
     setDocumentText(undefined);
-    
-    incrementThinkLongerUsage();
   }
 
   const handleExplain = async () => {
     const textToExplain = message.trim();
-    const lastMessage = activeChat?.messages?.[activeChat.messages.length - 1];
+    let lastMessage = activeChat?.messages?.[activeChat.messages.length - 1];
+
+    // If the last message was an assistant's explanation, get the one before it.
+    if (lastMessage?.text.startsWith('Explanation:')) {
+      lastMessage = activeChat?.messages?.[activeChat.messages.length - 2];
+    }
+    
 
     let explanationTarget = textToExplain;
     let chatId = activeChat?.id;
@@ -199,8 +193,15 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         };
         chatId = addMessage(chatId, userMessage);
         setMessage("");
-    } else {
-        explanationTarget = lastMessage?.text;
+    } else if (lastMessage?.text) {
+        explanationTarget = lastMessage.text;
+         const userMessage: Message = {
+            id: String(Date.now() + 1),
+            role: 'user',
+            text: `Explain - "${explanationTarget}"`,
+            timestamp: Date.now() - 1
+        };
+        chatId = addMessage(chatId, userMessage);
     }
 
 
@@ -211,7 +212,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       const assistantMessage: Message = {
         id: String(Date.now()),
         role: 'assistant',
-        text: result.explanation,
+        text: `Explanation: ${result.explanation}`,
         timestamp: Date.now(),
       }
 
@@ -281,7 +282,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask me anything that's on your mind..."
-          className="pr-24 min-h-[52px] resize-none"
+          className="pr-24 min-h-[52px] resize-none pt-3"
           rows={1}
           disabled={isThinking || isParsing}
         />
