@@ -7,12 +7,10 @@ interface ChatContextType {
   chatSessions: ChatSession[];
   activeChat: ChatSession | null;
   isThinking: boolean;
-  isPrivacyMode: boolean;
   setActiveChat: (chatId: string) => void;
   addMessage: (chatId: string | null, message: Message) => string | undefined;
   createNewChat: () => void;
   setIsThinking: (isThinking: boolean) => void;
-  setIsPrivacyMode: (isPrivacy: boolean) => void;
   deleteChat: (chatId: string) => void;
   clearAllChats: () => void;
 }
@@ -23,15 +21,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
-  const [isPrivacyMode, setIsPrivacyMode] = useState(false);
-  const [temporaryChat, setTemporaryChat] = useState<ChatSession | null>(null);
 
-
-  const activeChat = isPrivacyMode && temporaryChat ? temporaryChat : chatSessions.find(chat => chat.id === activeChatId) || null;
+  const activeChat = chatSessions.find(chat => chat.id === activeChatId) || null;
 
   const createNewChat = useCallback(() => {
-    setIsPrivacyMode(false);
-    setTemporaryChat(null);
     const newChat: ChatSession = {
       id: `chat_${Date.now()}`,
       title: 'New Chat',
@@ -43,30 +36,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const setActiveChat = (chatId: string) => {
-    setIsPrivacyMode(false);
-    setTemporaryChat(null);
     setActiveChatId(chatId);
   };
 
   const addMessage = useCallback((chatId: string | null, message: Message): string | undefined => {
-    if (isPrivacyMode) {
-        setTemporaryChat(prevChat => {
-            const currentMessages = prevChat?.messages || [];
-            const newMessages = [...currentMessages, message];
-            if (!prevChat) {
-                setActiveChatId(null);
-                return {
-                    id: `temp_${Date.now()}`,
-                    title: 'Private Chat',
-                    messages: newMessages,
-                    timestamp: Date.now(),
-                }
-            }
-            return { ...prevChat, messages: newMessages };
-        })
-        return;
-    }
-
     if (!chatId) {
         const newChatId = `chat_${Date.now()}`;
         const newChat: ChatSession = {
@@ -100,7 +73,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     })
     );
     return chatId;
-  }, [isPrivacyMode]);
+  }, []);
 
   const deleteChat = (chatId: string) => {
     setChatSessions(prevSessions => {
@@ -115,25 +88,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const clearAllChats = () => {
     setChatSessions([]);
     setActiveChatId(null);
-    setTemporaryChat(null);
   };
 
-  const handleSetIsPrivacyMode = (isPrivate: boolean) => {
-    if (isPrivate) {
-        setTemporaryChat({
-            id: `temp_${Date.now()}`,
-            title: 'Private Chat',
-            messages: [],
-            timestamp: Date.now()
-        })
-    } else {
-        setTemporaryChat(null);
-    }
-    setIsPrivacyMode(isPrivate);
-  }
 
   return (
-    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, isPrivacyMode, setActiveChat, addMessage, createNewChat, setIsThinking, setIsPrivacyMode: handleSetIsPrivacyMode, deleteChat, clearAllChats }}>
+    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, setActiveChat, addMessage, createNewChat, setIsThinking, deleteChat, clearAllChats }}>
       {children}
     </ChatContext.Provider>
   );

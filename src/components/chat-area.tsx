@@ -8,8 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { ChatMessage } from "./chat-message"
 import { SuggestionCarousel } from "./suggestion-carousel"
@@ -22,10 +20,9 @@ import { useChat } from "@/hooks/use-chat"
 import { Infinity } from "lucide-react"
 import { SidebarTrigger } from "./ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip"
 
 export function ChatArea() {
-  const { activeChat, addMessage, isThinking, setIsThinking, isPrivacyMode, setIsPrivacyMode } = useChat();
+  const { activeChat, addMessage, isThinking, setIsThinking } = useChat();
   const [isReplying, setIsReplying] = React.useState<Message | null>(null)
   const [selectedModel, setSelectedModel] = React.useState("googleai/gemini-2.0-flash")
   const viewportRef = React.useRef<HTMLDivElement>(null)
@@ -53,7 +50,7 @@ export function ChatArea() {
     setIsThinking(true)
 
     try {
-      const chatHistory = (isPrivacyMode ? activeChat?.messages ?? [] : (activeChat?.messages || [])).slice(-10);
+      const chatHistory = (activeChat?.messages || []).slice(-10);
 
       const history = chatHistory.map(m => ({ isUser: m.role === 'user', text: m.text, role: m.role as 'user' | 'assistant' }));
       
@@ -120,19 +117,6 @@ export function ChatArea() {
             </Select>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-end">
-          <div className="items-center gap-2 hidden sm:flex">
-            <Switch id="privacy-mode" checked={isPrivacyMode} onCheckedChange={setIsPrivacyMode} />
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Label htmlFor="privacy-mode">Privacy</Label>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p className="max-w-xs">When enabled, your chat history would be temporary and wouldn't be stored. Currently, your chats are stored in your browser's memory for this session</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-          </div>
         </div>
       </header>
 

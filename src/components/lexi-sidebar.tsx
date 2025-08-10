@@ -11,21 +11,41 @@ import {
   SidebarMenuButton,
   SidebarMenuAction,
 } from "@/components/ui/sidebar"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Infinity, MessageSquarePlus, Settings, Trash2 } from "lucide-react"
+import { Infinity, MessageSquarePlus, Trash2 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useChat } from "@/hooks/use-chat"
 import { formatDistanceToNow } from "date-fns"
-import { SettingsModal } from "./settings-modal"
+import { useToast } from "@/hooks/use-toast"
+
 
 export function LexiSidebar() {
-  const { chatSessions, activeChat, setActiveChat, createNewChat, deleteChat } = useChat();
-  const [isSettingsModalOpen, setSettingsModalOpen] = React.useState(false);
+  const { chatSessions, activeChat, setActiveChat, createNewChat, deleteChat, clearAllChats } = useChat();
+  const { toast } = useToast()
 
   const handleDeleteChat = (e: React.MouseEvent, chatId: string) => {
     e.stopPropagation();
     deleteChat(chatId);
+  }
+
+  const handleClearHistory = () => {
+    clearAllChats()
+    toast({
+      title: "Chat history cleared",
+      description: "All your conversations have been deleted.",
+    })
   }
 
   return (
@@ -70,10 +90,29 @@ export function LexiSidebar() {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Settings" onClick={() => setSettingsModalOpen(true)}>
-                <Settings />
-                <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-              </SidebarMenuButton>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <SidebarMenuButton tooltip="Clear History">
+                        <Trash2 />
+                        <span className="group-data-[collapsible=icon]:hidden">Clear History</span>
+                    </SidebarMenuButton>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your
+                        entire chat history.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleClearHistory}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton tooltip="Profile">
@@ -87,7 +126,6 @@ export function LexiSidebar() {
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SettingsModal isOpen={isSettingsModalOpen} onOpenChange={setSettingsModalOpen} />
     </>
   )
 }
