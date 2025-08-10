@@ -152,25 +152,27 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       });
       return;
     }
-
+  
     if (!message.trim()) {
-        toast({
-            title: "Nothing to think about",
-            description: "Please type a message before using Think Longer.",
-        });
-        return;
+      toast({
+        title: "Nothing to think about",
+        description: "Please type a message before using Think Longer.",
+      });
+      return;
     }
     
-    setIsThinkingLonger(true);
-    // Simulate thinking for 8 seconds
-    await new Promise(resolve => setTimeout(resolve, 8000));
-    
+    // Immediately send the user's message
     onSendMessage(message, "googleai/gemini-2.5-pro", attachments, documentText, true);
     incrementThinkLongerUsage();
     
+    // Clear the input fields
     setMessage("");
     setAttachments([]);
     setDocumentText(undefined);
+  
+    // Set the thinking state after the message is sent
+    setIsThinkingLonger(true);
+    await new Promise(resolve => setTimeout(resolve, 8000));
     setIsThinkingLonger(false);
   }
 

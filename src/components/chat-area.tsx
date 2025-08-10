@@ -47,7 +47,9 @@ export function ChatArea() {
     }
     
     setIsReplying(null)
-    if (!thinkLonger) {
+    if (thinkLonger) {
+      setIsThinkingLonger(true);
+    } else {
       setIsThinking(true)
     }
 
