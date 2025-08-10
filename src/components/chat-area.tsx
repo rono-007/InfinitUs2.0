@@ -69,7 +69,7 @@ export function ChatArea() {
         model: model || selectedModel,
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
-        ...(thinkLonger && {thinkLonger}),
+        thinkLonger: !!thinkLonger,
       } as ChatInput);
 
       const assistantMessage: Message = {

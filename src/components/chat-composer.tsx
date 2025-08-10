@@ -282,7 +282,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask me anything that's on your mind..."
-          className="pr-24 min-h-[52px] resize-none pt-3"
+          className="pr-24 min-h-[52px] resize-none"
           rows={1}
           disabled={isThinking || isParsing}
         />
