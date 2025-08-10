@@ -160,19 +160,22 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
 
     if (isThinking) return;
 
-    const explanationTarget = textToExplain || lastMessage?.text;
+    let explanationTarget = textToExplain;
     let chatId = activeChat?.id;
 
     if (textToExplain) {
-      const userMessage: Message = {
-        id: String(Date.now() + 1),
-        role: 'user',
-        text: textToExplain,
-        timestamp: Date.now() - 1
-      };
-      chatId = addMessage(chatId, userMessage);
-      setMessage(""); // Clear the input field
+        const userMessage: Message = {
+            id: String(Date.now() + 1),
+            role: 'user',
+            text: `Explain - "${textToExplain}"`,
+            timestamp: Date.now() - 1
+        };
+        chatId = addMessage(chatId, userMessage);
+        setMessage("");
+    } else {
+        explanationTarget = lastMessage?.text;
     }
+
 
     setIsThinking(true);
     try {
