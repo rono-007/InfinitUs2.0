@@ -81,7 +81,7 @@ export function ChatMessage({ message, onReply }: ChatMessageProps) {
 
 
   return (
-    <div className={cn("flex items-start gap-4", !isAssistant && "justify-end")}>
+    <div className={cn("flex items-start gap-4", !isAssistant && "justify-end animate-message-in")}>
       {isAssistant && (
         <Avatar className="h-8 w-8 shrink-0">
             <AvatarFallback><Infinity size={20} /></AvatarFallback>
