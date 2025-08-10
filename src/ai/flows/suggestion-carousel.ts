@@ -19,6 +19,8 @@ const suggestionCarouselPrompt = ai.definePrompt({
 
 Generate a list of example questions a user might ask to start a conversation and explore the chatbot's capabilities. These questions should be diverse and engaging.
 
+To ensure variety, use the current timestamp as a seed: {{{timestamp}}}.
+
 Return the questions as a JSON array of strings. Do not include any other text or formatting.`,
 });
 
@@ -28,7 +30,7 @@ const suggestionCarouselFlow = ai.defineFlow(
     outputSchema: SuggestionOutputSchema,
   },
   async () => {
-    const {output} = await suggestionCarouselPrompt({});
+    const {output} = await suggestionCarouselPrompt({timestamp: new Date().toISOString()});
     return output!;
   }
 );
