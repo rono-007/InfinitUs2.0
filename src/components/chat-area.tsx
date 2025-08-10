@@ -29,7 +29,7 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[], documentText?: string) => {
+  const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => {
     let chatId = activeChat?.id;
     
     const newMessage: Message = {
@@ -63,6 +63,7 @@ export function ChatArea() {
         model: model || selectedModel,
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
+        ...(thinkLonger && {thinkLonger}),
       } as ChatInput);
 
       const assistantMessage: Message = {

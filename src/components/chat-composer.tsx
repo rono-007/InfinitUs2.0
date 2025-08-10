@@ -19,7 +19,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 
 interface ChatComposerProps {
-  onSendMessage: (message: string, model?: string, attachments?: Attachment[], documentText?: string) => void
+  onSendMessage: (message: string, model?: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => void
   replyingTo: Message | null
   onClearReply: () => void
   isThinking: boolean
@@ -32,7 +32,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const [isParsing, setIsParsing] = React.useState(false);
   const [isAttachmentModalOpen, setAttachmentModalOpen] = React.useState(false)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-  const { activeChat, addMessage, setIsThinking } = useChat()
+  const { activeChat, addMessage, setIsThinking, getThinkLongerUsage, incrementThinkLongerUsage } = useChat()
   const { toast } = useToast()
 
   const parseDocument = async (file: File): Promise<string> => {
@@ -133,22 +133,52 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   }
 
 
-  const handleSend = (model?: string) => {
+  const handleSend = () => {
     if ((message.trim() || attachments.length > 0) && !isThinking) {
-      onSendMessage(message, model, attachments, documentText)
+      onSendMessage(message, undefined, attachments, documentText)
       setMessage("")
       setAttachments([])
       setDocumentText(undefined)
     }
   }
 
-  const handleThinkLonger = () => {
-    handleSend("googleai/gemini-2.5-pro")
+  const handleThinkLonger = async () => {
+    const usage = getThinkLongerUsage();
+    if (usage.count >= 5) {
+      toast({
+        title: "Think Longer Limit Reached",
+        description: "You have used your 5 'Think Longer' credits for today. Please try again tomorrow.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!message.trim()) {
+        toast({
+            title: "Nothing to think about",
+            description: "Please type a message before using Think Longer.",
+        });
+        return;
+    }
+    
+    setIsThinking(true);
+    // Simulate thinking for 8 seconds
+    await new Promise(resolve => setTimeout(resolve, 8000));
+    
+    onSendMessage(message, "googleai/gemini-2.5-pro", attachments, documentText, true);
+    incrementThinkLongerUsage();
+    
+    setMessage("");
+    setAttachments([]);
+    setDocumentText(undefined);
   }
 
   const handleExplain = async () => {
     const textToExplain = message.trim();
     const lastMessage = activeChat?.messages?.[activeChat.messages.length - 1];
+
+    let explanationTarget = textToExplain;
+    let chatId = activeChat?.id;
 
     if (!textToExplain && (!lastMessage || !lastMessage.text)) {
       toast({
@@ -160,10 +190,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
 
     if (isThinking) return;
 
-    let explanationTarget = textToExplain;
-    let chatId = activeChat?.id;
 
     if (textToExplain) {
+        explanationTarget = textToExplain;
         const userMessage: Message = {
             id: String(Date.now() + 1),
             role: 'user',
@@ -254,7 +283,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask me anything that's on your mind..."
-          className="pr-24 min-h-[52px] resize-none"
+          className="pr-24 min-h-[52px] resize-none pt-3"
           rows={1}
           disabled={isThinking || isParsing}
         />

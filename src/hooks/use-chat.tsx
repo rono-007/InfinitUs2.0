@@ -1,7 +1,14 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import type { Message, ChatSession } from '@/lib/types';
+
+const THINK_LONGER_USAGE_KEY = 'thinkLongerUsage';
+
+interface ThinkLongerUsage {
+    count: number;
+    date: string; // YYYY-MM-DD
+}
 
 interface ChatContextType {
   chatSessions: ChatSession[];
@@ -13,6 +20,8 @@ interface ChatContextType {
   setIsThinking: (isThinking: boolean) => void;
   deleteChat: (chatId: string) => void;
   clearAllChats: () => void;
+  getThinkLongerUsage: () => ThinkLongerUsage;
+  incrementThinkLongerUsage: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -21,6 +30,45 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
+  const [thinkLongerUsage, setThinkLongerUsage] = useState<ThinkLongerUsage>({ count: 0, date: new Date().toISOString().split('T')[0] });
+
+  useEffect(() => {
+    try {
+        const storedUsage = localStorage.getItem(THINK_LONGER_USAGE_KEY);
+        if (storedUsage) {
+            const parsedUsage: ThinkLongerUsage = JSON.parse(storedUsage);
+            const today = new Date().toISOString().split('T')[0];
+            if (parsedUsage.date === today) {
+                setThinkLongerUsage(parsedUsage);
+            } else {
+                // Reset for the new day
+                const newUsage = { count: 0, date: today };
+                localStorage.setItem(THINK_LONGER_USAGE_KEY, JSON.stringify(newUsage));
+                setThinkLongerUsage(newUsage);
+            }
+        }
+    } catch (error) {
+        console.error("Could not read think longer usage from localStorage", error);
+    }
+  }, []);
+
+  const getThinkLongerUsage = (): ThinkLongerUsage => {
+    return thinkLongerUsage;
+  };
+
+  const incrementThinkLongerUsage = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const newUsage = {
+        count: thinkLongerUsage.date === today ? thinkLongerUsage.count + 1 : 1,
+        date: today,
+    };
+    try {
+        localStorage.setItem(THINK_LONGER_USAGE_KEY, JSON.stringify(newUsage));
+        setThinkLongerUsage(newUsage);
+    } catch (error) {
+        console.error("Could not save think longer usage to localStorage", error);
+    }
+  };
 
   const activeChat = chatSessions.find(chat => chat.id === activeChatId) || null;
 
@@ -92,7 +140,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, setActiveChat, addMessage, createNewChat, setIsThinking, deleteChat, clearAllChats }}>
+    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, setActiveChat, addMessage, createNewChat, setIsThinking, deleteChat, clearAllChats, getThinkLongerUsage, incrementThinkLongerUsage }}>
       {children}
     </ChatContext.Provider>
   );
