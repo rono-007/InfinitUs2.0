@@ -147,7 +147,7 @@ export function ChatArea() {
           <ScrollBar />
         </ScrollArea>
       ) : (
-        <div className="flex-grow flex flex-col items-center justify-center p-4">
+        <div className="flex-grow flex flex-col items-center justify-center p-4 mb-24">
             <div className="relative flex items-center justify-center w-20 h-20">
                 <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse-glow"></div>
                 <Infinity size={40} className="text-primary z-10" />
