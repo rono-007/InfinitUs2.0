@@ -14,6 +14,7 @@ interface ChatContextType {
   setIsThinking: (isThinking: boolean) => void;
   setIsPrivacyMode: (isPrivacy: boolean) => void;
   deleteChat: (chatId: string) => void;
+  clearAllChats: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -66,41 +67,39 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         return;
     }
 
-    let newChatId = chatId;
-
-    if (!newChatId) {
-        const generatedId = `chat_${Date.now()}`;
+    if (!chatId) {
+        const newChatId = `chat_${Date.now()}`;
         const newChat: ChatSession = {
-          id: generatedId,
+          id: newChatId,
           title: message.text.substring(0, 30) + (message.text.length > 30 ? "..." : ""),
           messages: [message],
           timestamp: Date.now()
         };
         setChatSessions(prev => [newChat, ...prev]);
-        setActiveChatId(generatedId);
-        return generatedId;
-      }
+        setActiveChatId(newChatId);
+        return newChatId;
+    }
   
-      setChatSessions(prevSessions =>
-        prevSessions.map(session => {
-          if (session.id === newChatId) {
-            const newMessages = [...session.messages, message];
-            let newTitle = session.title;
-            if (session.title === 'New Chat' && message.role === 'user' && message.text) {
-               const userMessage = newMessages.find(m => m.role === 'user');
-               if (userMessage && userMessage.text) {
-                  newTitle = userMessage.text.substring(0, 30);
-                  if (userMessage.text.length > 30) {
-                      newTitle += "...";
-                  }
-               }
+    setChatSessions(prevSessions =>
+    prevSessions.map(session => {
+        if (session.id === chatId) {
+        const newMessages = [...session.messages, message];
+        let newTitle = session.title;
+        if (session.title === 'New Chat' && message.role === 'user' && message.text) {
+            const userMessage = newMessages.find(m => m.role === 'user');
+            if (userMessage && userMessage.text) {
+                newTitle = userMessage.text.substring(0, 30);
+                if (userMessage.text.length > 30) {
+                    newTitle += "...";
+                }
             }
-            return { ...session, messages: newMessages, title: newTitle };
-          }
-          return session;
-        })
-      );
-      return newChatId;
+        }
+        return { ...session, messages: newMessages, title: newTitle };
+        }
+        return session;
+    })
+    );
+    return chatId;
   }, [isPrivacyMode]);
 
   const deleteChat = (chatId: string) => {
@@ -111,6 +110,12 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         }
         return newSessions;
     });
+  };
+
+  const clearAllChats = () => {
+    setChatSessions([]);
+    setActiveChatId(null);
+    setTemporaryChat(null);
   };
 
   const handleSetIsPrivacyMode = (isPrivate: boolean) => {
@@ -128,7 +133,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, isPrivacyMode, setActiveChat, addMessage, createNewChat, setIsThinking, setIsPrivacyMode: handleSetIsPrivacyMode, deleteChat }}>
+    <ChatContext.Provider value={{ chatSessions, activeChat, isThinking, isPrivacyMode, setActiveChat, addMessage, createNewChat, setIsThinking, setIsPrivacyMode: handleSetIsPrivacyMode, deleteChat, clearAllChats }}>
       {children}
     </ChatContext.Provider>
   );
