@@ -47,7 +47,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setActiveChatId(chatId);
   };
 
-  const addMessage = useCallback((chatId: string | null, message: Message) => {
+  const addMessage = useCallback((chatId: string | null, message: Message): string | undefined => {
     if (isPrivacyMode) {
         setTemporaryChat(prevChat => {
             const currentMessages = prevChat?.messages || [];
@@ -66,38 +66,41 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         return;
     }
 
-    if (!chatId) {
-      const newChatId = `chat_${Date.now()}`;
-      const newChat: ChatSession = {
-        id: newChatId,
-        title: message.text.substring(0, 30) + (message.text.length > 30 ? "..." : ""),
-        messages: [message],
-        timestamp: Date.now()
-      };
-      setChatSessions(prev => [newChat, ...prev]);
-      setActiveChatId(newChatId);
-      return newChatId;
-    }
+    let newChatId = chatId;
 
-    setChatSessions(prevSessions =>
-      prevSessions.map(session => {
-        if (session.id === chatId) {
-          const newMessages = [...session.messages, message];
-          let newTitle = session.title;
-          if (session.title === 'New Chat' && message.role === 'user' && message.text) {
-             const userMessage = newMessages.find(m => m.role === 'user');
-             if (userMessage && userMessage.text) {
-                newTitle = userMessage.text.substring(0, 30);
-                if (userMessage.text.length > 30) {
-                    newTitle += "...";
-                }
-             }
+    if (!newChatId) {
+        const generatedId = `chat_${Date.now()}`;
+        const newChat: ChatSession = {
+          id: generatedId,
+          title: message.text.substring(0, 30) + (message.text.length > 30 ? "..." : ""),
+          messages: [message],
+          timestamp: Date.now()
+        };
+        setChatSessions(prev => [newChat, ...prev]);
+        setActiveChatId(generatedId);
+        return generatedId;
+      }
+  
+      setChatSessions(prevSessions =>
+        prevSessions.map(session => {
+          if (session.id === newChatId) {
+            const newMessages = [...session.messages, message];
+            let newTitle = session.title;
+            if (session.title === 'New Chat' && message.role === 'user' && message.text) {
+               const userMessage = newMessages.find(m => m.role === 'user');
+               if (userMessage && userMessage.text) {
+                  newTitle = userMessage.text.substring(0, 30);
+                  if (userMessage.text.length > 30) {
+                      newTitle += "...";
+                  }
+               }
+            }
+            return { ...session, messages: newMessages, title: newTitle };
           }
-          return { ...session, messages: newMessages, title: newTitle };
-        }
-        return session;
-      })
-    );
+          return session;
+        })
+      );
+      return newChatId;
   }, [isPrivacyMode]);
 
   const deleteChat = (chatId: string) => {
