@@ -57,8 +57,8 @@ const chatFlow = ai.defineFlow(
     inputSchema: ChatInputSchema,
     outputSchema: ChatOutputSchema,
   },
-  async input => {
-    const model = input.model || 'googleai/gemini-2.0-flash';
+  async (input) => {
+    const model = input.thinkLonger ? 'googleai/gemini-2.5-pro' : (input.model || 'googleai/gemini-2.0-flash');
     const config = input.thinkLonger ? { maxOutputTokens: 2048 } : {};
     
     const {output} = await chatPrompt(input, { model, config });

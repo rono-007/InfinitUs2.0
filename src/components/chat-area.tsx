@@ -29,7 +29,7 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string, model?: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => {
+  const handleSendMessage = async (text: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => {
     let chatId = activeChat?.id;
     
     const newMessage: Message = {
@@ -66,7 +66,7 @@ export function ChatArea() {
       const result = await chat({ 
         message: text, 
         history, 
-        model: model || selectedModel,
+        model: thinkLonger ? 'googleai/gemini-2.5-pro' : selectedModel,
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
         thinkLonger: !!thinkLonger,

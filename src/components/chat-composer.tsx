@@ -19,7 +19,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 
 interface ChatComposerProps {
-  onSendMessage: (message: string, model?: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => void
+  onSendMessage: (message: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => void
   replyingTo: Message | null
   onClearReply: () => void
   isThinking: boolean
@@ -135,7 +135,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
 
   const handleSend = () => {
     if ((message.trim() || attachments.length > 0) && !isThinking) {
-      onSendMessage(message, undefined, attachments, documentText)
+      onSendMessage(message, attachments, documentText)
       setMessage("")
       setAttachments([])
       setDocumentText(undefined)
@@ -151,9 +151,8 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       return;
     }
     
-    onSendMessage(message, "googleai/gemini-2.5-pro", attachments, documentText, true);
+    onSendMessage(message, attachments, documentText, true);
     
-    // Clear the input fields immediately
     setMessage("");
     setAttachments([]);
     setDocumentText(undefined);
