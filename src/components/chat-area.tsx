@@ -29,13 +29,13 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean, tone?: string) => {
+  const handleSendMessage = async (message: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean, tone?: string) => {
     let chatId = activeChat?.id;
     
     const newMessage: Message = {
       id: String(Date.now()),
       role: 'user',
-      text,
+      text: message,
       attachments,
       timestamp: Date.now(),
       ...(tone && { tone }),
@@ -65,7 +65,7 @@ export function ChatArea() {
       const imageUrl = imageAttachment?.url;
       
       const input: ChatInput = { 
-        message: text, 
+        message, 
         history, 
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
@@ -111,15 +111,15 @@ export function ChatArea() {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
+       <header className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2 flex-1">
             <SidebarTrigger />
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
         </div>
         {!isMobile && (
           <div className="flex-1 flex justify-center">
               <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[220px]">
                   <SelectValue placeholder="Select a model" />
                   </SelectTrigger>
                   <SelectContent>
@@ -132,8 +132,7 @@ export function ChatArea() {
               </Select>
           </div>
         )}
-        <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-end">
-        </div>
+        <div className="flex-1" />
       </header>
 
       {activeChat && activeChat.messages.length > 0 ? (
