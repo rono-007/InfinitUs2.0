@@ -37,7 +37,8 @@ export const ChatInputSchema = z.object({
   model: z.string().optional().describe('The model to use for the response.'),
   imageUrl: z.string().optional().describe("An image to be included in the prompt, as a data URI."),
   documentText: z.string().optional().describe("The extracted text from an attached document."),
-  thinkLonger: z.boolean().optional().describe("Whether to generate a longer, more detailed response.")
+  thinkLonger: z.boolean().optional().describe("Whether to generate a longer, more detailed response."),
+  tone: z.string().optional().describe("The tone of the response.")
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 

@@ -19,7 +19,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 
 interface ChatComposerProps {
-  onSendMessage: (message: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => void
+  onSendMessage: (message: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean, tone?: string) => void
   replyingTo: Message | null
   onClearReply: () => void
   isThinking: boolean
@@ -27,6 +27,7 @@ interface ChatComposerProps {
 
 export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinking }: ChatComposerProps) {
   const [message, setMessage] = React.useState("")
+  const [tone, setTone] = React.useState("casual")
   const [attachments, setAttachments] = React.useState<Attachment[]>([])
   const [documentText, setDocumentText] = React.useState<string | undefined>(undefined);
   const [isParsing, setIsParsing] = React.useState(false);
@@ -135,7 +136,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
 
   const handleSend = () => {
     if ((message.trim() || attachments.length > 0) && !isThinking) {
-      onSendMessage(message, attachments, documentText)
+      onSendMessage(message, attachments, documentText, false, tone)
       setMessage("")
       setAttachments([])
       setDocumentText(undefined)
@@ -151,7 +152,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       return;
     }
     
-    onSendMessage(message, attachments, documentText, true);
+    onSendMessage(message, attachments, documentText, true, tone);
     
     setMessage("");
     setAttachments([]);
@@ -311,7 +312,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         </div>
         <div className="flex items-center gap-2">
             <ThemeSwitcher />
-            <Select defaultValue="casual">
+            <Select value={tone} onValueChange={setTone}>
                 <SelectTrigger className="w-[120px]" disabled={isThinking || isParsing}>
                 <SelectValue placeholder="Tone" />
                 </SelectTrigger>

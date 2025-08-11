@@ -19,6 +19,10 @@ const chatPrompt = ai.definePrompt({
   output: {schema: ChatOutputSchema},
   prompt: `You are a helpful and friendly AI assistant named InfinitUs 2.0.
 
+{{#if tone}}
+  Your response must be in a {{{tone}}} tone.
+{{/if}}
+
 {{#if thinkLonger}}
   You have been asked to "think longer" about this. Provide a comprehensive, detailed, and well-structured response. Take your time to be thorough.
 {{/if}}

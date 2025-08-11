@@ -29,7 +29,7 @@ export function ChatArea() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
 
-  const handleSendMessage = async (text: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean) => {
+  const handleSendMessage = async (text: string, attachments?: Attachment[], documentText?: string, thinkLonger?: boolean, tone?: string) => {
     let chatId = activeChat?.id;
     
     const newMessage: Message = {
@@ -38,6 +38,7 @@ export function ChatArea() {
       text,
       attachments,
       timestamp: Date.now(),
+      ...(tone && { tone }),
       ...(thinkLonger && { thinkLonger: true }),
       ...(isReplying && { inReplyTo: isReplying.id, metadata: { isReplying: true, originalText: isReplying.text } })
     }
@@ -70,6 +71,7 @@ export function ChatArea() {
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
         thinkLonger: !!thinkLonger,
+        tone,
       } as ChatInput);
 
       const assistantMessage: Message = {
