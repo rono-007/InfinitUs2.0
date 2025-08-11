@@ -120,7 +120,6 @@ export default {
         'typing-dot': 'typing-dot 1.4s infinite',
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'message-in': 'message-in 0.3s ease-out',
-        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },
