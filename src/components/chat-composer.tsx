@@ -51,8 +51,8 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
             let textContent = '';
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
-              const text = await page.getTextContent();
-              textContent += text.items.map(item => (item as any).str).join(' ');
+              const textContentStream = await page.getTextContent();
+              textContent += textContentStream.items.map(item => ("str" in item ? item.str : "")).join(' ');
             }
             resolve(textContent);
           } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
@@ -63,9 +63,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           } else {
             reject(new Error(`Unsupported file type: ${file.type}`));
           }
-        } catch (error) {
-          console.error("Error parsing document:", error);
-          reject(error);
+        } catch (error: any) {
+            console.error("Error parsing document:", error);
+            reject(new Error(error.message || "An unexpected error occurred during parsing."));
         }
       };
       reader.onerror = () => reject(new Error("Failed to read file."));
@@ -317,8 +317,8 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         </div>
         <div className="flex items-center gap-2">
             <ThemeSwitcher />
-            <Select value={tone} onValueChange={setTone}>
-                <SelectTrigger className="w-[120px]" disabled={isThinking || isParsing}>
+            <Select value={tone} onValueChange={setTone} disabled={isThinking || isParsing}>
+                <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Tone" />
                 </SelectTrigger>
                 <SelectContent>
@@ -333,5 +333,3 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     </div>
   )
 }
-
-    
