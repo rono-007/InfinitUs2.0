@@ -67,7 +67,6 @@ export function ChatArea() {
       const input: ChatInput = { 
         message: text, 
         history, 
-        model: thinkLonger ? 'googleai/gemini-2.5-pro' : selectedModel,
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
         ...(thinkLonger && {thinkLonger: !!thinkLonger}),
