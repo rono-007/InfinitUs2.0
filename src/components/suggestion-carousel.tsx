@@ -48,7 +48,7 @@ export function SuggestionCarousel({ onSuggestionClick }: SuggestionCarouselProp
                 [...suggestions, ...suggestions].map((suggestion, index) => (
                     <div key={index} className="p-1 flex-shrink-0">
                         <Card 
-                            className="h-[80px] w-[200px] border-0 shadow-sm bg-transparent hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg"
+                            className="h-[80px] w-[200px] shadow-sm bg-transparent hover:bg-accent hover:text-accent-foreground transition-all cursor-pointer hover:shadow-lg"
                             onClick={() => onSuggestionClick(suggestion)}
                         >
                             <CardContent className="flex items-center justify-center p-4 text-center">
