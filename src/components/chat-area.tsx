@@ -63,16 +63,18 @@ export function ChatArea() {
       
       const imageAttachment = attachments?.find(att => att.type === 'image' && att.url);
       const imageUrl = imageAttachment?.url;
-
-      const result = await chat({ 
+      
+      const input: ChatInput = { 
         message: text, 
         history, 
         model: thinkLonger ? 'googleai/gemini-2.5-pro' : selectedModel,
         ...(imageUrl && {imageUrl}),
         ...(documentText && {documentText}),
-        thinkLonger: !!thinkLonger,
-        tone,
-      } as ChatInput);
+        ...(thinkLonger && {thinkLonger: !!thinkLonger}),
+        ...(tone && {tone}),
+      };
+
+      const result = await chat(input);
 
       const assistantMessage: Message = {
         id: String(Date.now()),
@@ -110,25 +112,27 @@ export function ChatArea() {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-2 flex-1">
+      <header className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
             <SidebarTrigger />
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
         </div>
-        <div className="flex-1 flex justify-center">
-            <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="w-[140px] sm:w-[180px]">
-                <SelectValue placeholder="Select a model" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="googleai/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
-                    <SelectItem value="googleai/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
-                    <SelectItem value="googleai/gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</SelectItem>
-                    <SelectItem value="googleai/gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
-                    <SelectItem value="googleai/gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
+        {!isMobile && (
+          <div className="flex-1 flex justify-center">
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                  <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="googleai/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                      <SelectItem value="googleai/gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+                      <SelectItem value="googleai/gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</SelectItem>
+                      <SelectItem value="googleai/gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
+                      <SelectItem value="googleai/gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</SelectItem>
+                  </SelectContent>
+              </Select>
+          </div>
+        )}
         <div className="flex items-center gap-2 sm:gap-4 flex-1 justify-end">
         </div>
       </header>
@@ -165,7 +169,7 @@ export function ChatArea() {
         </div>
       )}
 
-      <div className="p-4 bg-background">
+      <div className="p-4 bg-background border-t">
         <div className="max-w-4xl mx-auto">
           {(!activeChat || activeChat.messages.length === 0) && !isMobile && <SuggestionCarousel onSuggestionClick={(suggestion) => handleSendMessage(suggestion)} />}
           <ChatComposer onSendMessage={handleSendMessage} replyingTo={isReplying} onClearReply={() => setIsReplying(null)} isThinking={isThinking || isThinkingLonger} />

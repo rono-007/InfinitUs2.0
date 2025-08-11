@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast"
 import { ThemeSwitcher } from "./theme-switcher"
 import * as pdfjs from "pdfjs-dist";
 import mammoth from "mammoth/mammoth.browser";
+import { useIsMobile } from "@/hooks/use-mobile"
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -33,8 +34,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const [isParsing, setIsParsing] = React.useState(false);
   const [isAttachmentModalOpen, setAttachmentModalOpen] = React.useState(false)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-  const { activeChat, addMessage, setIsThinking, setIsThinkingLonger } = useChat()
+  const { activeChat, addMessage, setIsThinking } = useChat()
   const { toast } = useToast()
+  const isMobile = useIsMobile()
 
   const parseDocument = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -65,6 +67,11 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           }
         } catch (error: any) {
             console.error("Error parsing document:", error);
+            toast({
+                title: "Error Parsing Document",
+                description: error.message || "An unexpected error occurred during parsing.",
+                variant: "destructive",
+            });
             reject(new Error(error.message || "An unexpected error occurred during parsing."));
         }
       };
@@ -85,12 +92,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         const text = await parseDocument(documentFile);
         setDocumentText(text);
       } catch (error: any) {
-        console.error(error);
-        toast({
-          title: "Error Parsing Document",
-          description: error.message || "There was an error parsing your document. Please try again.",
-          variant: "destructive",
-        })
+        // Error is already toasted in parseDocument
       } finally {
         setIsParsing(false);
       }
@@ -134,41 +136,30 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   }
 
 
-  const handleSend = () => {
+  const handleSend = (thinkLonger = false) => {
     if ((message.trim() || attachments.length > 0) && !isThinking) {
-      onSendMessage(message, attachments, documentText, false, tone)
+      if (thinkLonger && !message.trim()) {
+        toast({
+          title: "Nothing to think about",
+          description: "Please type a message before using Think Longer.",
+        });
+        return;
+      }
+      onSendMessage(message, attachments, documentText, thinkLonger, tone)
       setMessage("")
       setAttachments([])
       setDocumentText(undefined)
     }
   }
 
-  const handleThinkLonger = () => {
-    if (!message.trim()) {
-      toast({
-        title: "Nothing to think about",
-        description: "Please type a message before using Think Longer.",
-      });
-      return;
-    }
-    
-    onSendMessage(message, attachments, documentText, true, tone);
-    
-    setMessage("");
-    setAttachments([]);
-    setDocumentText(undefined);
-  }
-
   const handleExplain = async () => {
     const textToExplain = message.trim();
     let lastMessage = activeChat?.messages?.[activeChat.messages.length - 1];
 
-    // If the last message was an assistant's explanation, get the one before it.
     if (lastMessage?.text.startsWith('Explanation:')) {
       lastMessage = activeChat?.messages?.[activeChat.messages.length - 2];
     }
     
-
     let explanationTarget = textToExplain;
     let chatId = activeChat?.id;
 
@@ -181,7 +172,6 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     }
 
     if (isThinking) return;
-
 
     if (textToExplain) {
         explanationTarget = textToExplain;
@@ -203,7 +193,6 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
         };
         chatId = addMessage(chatId, userMessage);
     }
-
 
     setIsThinking(true);
     try {
@@ -277,7 +266,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       {isParsing && (
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Parsing PDF... Please wait.</span>
+          <span>Parsing document... Please wait.</span>
         </div>
       )}
       <div className="relative">
@@ -304,21 +293,21 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
           ) : <Send />}
         </Button>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-start w-full sm:w-auto">
           <Button variant="outline" size="sm" disabled={isThinking || isParsing} onClick={handleExplain}>
             <Sparkles className="mr-2 h-4 w-4" />
             Explain
           </Button>
-          <Button variant="outline" size="sm" disabled={isThinking || isParsing} onClick={handleThinkLonger}>
+          <Button variant="outline" size="sm" disabled={isThinking || isParsing} onClick={() => handleSend(true)}>
             <BrainCircuit className="mr-2 h-4 w-4" />
             Think Longer
           </Button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-end w-full sm:w-auto">
             <ThemeSwitcher />
             <Select value={tone} onValueChange={setTone} disabled={isThinking || isParsing}>
-                <SelectTrigger className="w-[120px]">
+                <SelectTrigger className="w-full sm:w-[120px]">
                 <SelectValue placeholder="Tone" />
                 </SelectTrigger>
                 <SelectContent>
