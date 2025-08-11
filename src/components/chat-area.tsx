@@ -111,7 +111,7 @@ export function ChatArea() {
 
   return (
     <div className="flex flex-col h-screen">
-       <header className="flex items-center justify-between p-4 border-b">
+       <header className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2 flex-1">
             <SidebarTrigger />
             <h2 className="text-lg font-semibold font-headline">Chat</h2>
