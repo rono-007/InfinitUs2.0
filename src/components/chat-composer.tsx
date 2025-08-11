@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -15,6 +16,7 @@ import { ThemeSwitcher } from "./theme-switcher"
 import * as pdfjs from "pdfjs-dist";
 import mammoth from "mammoth/mammoth.browser";
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useThinkLongerLimit } from "@/hooks/use-think-longer-limit"
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -37,6 +39,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
   const { activeChat, addMessage, setIsThinking } = useChat()
   const { toast } = useToast()
   const isMobile = useIsMobile()
+  const { remainingUses, decrementUses, isLimitReached } = useThinkLongerLimit();
 
   const parseDocument = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -54,7 +57,8 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const textContentStream = await page.getTextContent();
-              textContent += textContentStream.items.map(item => ("str" in item ? item.str : "")).join(' ');
+              const pageText = textContentStream.items.map(item => ("str" in item ? item.str : "")).join(' ');
+              textContent += pageText + '\n\n';
             }
             resolve(textContent);
           } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
@@ -138,12 +142,23 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
 
   const handleSend = (thinkLonger = false) => {
     if ((message.trim() || attachments.length > 0) && !isThinking) {
-      if (thinkLonger && !message.trim()) {
-        toast({
-          title: "Nothing to think about",
-          description: "Please type a message before using Think Longer.",
-        });
-        return;
+      if (thinkLonger) {
+        if (!message.trim()) {
+            toast({
+                title: "Nothing to think about",
+                description: "Please type a message before using Think Longer.",
+            });
+            return;
+        }
+        if (isLimitReached) {
+            toast({
+                title: "Daily Limit Reached",
+                description: "You have used all your 'Think Longer' credits for today. Please try again tomorrow.",
+                variant: "destructive",
+            });
+            return;
+        }
+        decrementUses();
       }
       onSendMessage(message, attachments, documentText, thinkLonger, tone)
       setMessage("")
@@ -266,7 +281,7 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
       {isParsing && (
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Parsing document... Please wait.</span>
+          <span>Parsing PDF... Please wait.</span>
         </div>
       )}
       <div className="relative">
@@ -299,9 +314,9 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
             <Sparkles className="mr-2 h-4 w-4" />
             Explain
           </Button>
-          <Button variant="outline" size="sm" disabled={isThinking || isParsing} onClick={() => handleSend(true)}>
+          <Button variant="outline" size="sm" disabled={isThinking || isParsing || isLimitReached} onClick={() => handleSend(true)}>
             <BrainCircuit className="mr-2 h-4 w-4" />
-            Think Longer
+            Think Longer ({remainingUses})
           </Button>
         </div>
         <div className="flex items-center gap-2 justify-end w-full sm:w-auto">
@@ -322,3 +337,5 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     </div>
   )
 }
+
+    
