@@ -267,12 +267,17 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
                 <div key={att.id} className="relative group bg-muted p-2 rounded-md flex items-center gap-2 text-sm">
                     <FileIcon size={16} />
                     <span>{att.name}</span>
-                    {isParsing && att.type !== 'image' && <Loader2 className="h-4 w-4 animate-spin" />}
                     <Button variant="ghost" size="icon" className="h-5 w-5 absolute -top-2 -right-2 opacity-0 group-hover:opacity-100" onClick={() => removeAttachment(att.id)}>
                         <X size={14} />
                     </Button>
                 </div>
             ))}
+        </div>
+      )}
+      {isParsing && (
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span>Parsing PDF... Please wait.</span>
         </div>
       )}
       <div className="relative">
@@ -328,3 +333,5 @@ export function ChatComposer({ onSendMessage, replyingTo, onClearReply, isThinki
     </div>
   )
 }
+
+    
